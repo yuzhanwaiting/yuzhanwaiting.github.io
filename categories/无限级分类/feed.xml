@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微端生活</title>
+    <link>http://www.yuzhan.me/categories/%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB/feed/index.xml</link>
+    <description>Recent content on 微端生活</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <atom:link href="http://www.yuzhan.me/categories/%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB/feed/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>无限级分类研究：（八）新的方法</title>
+      <link>http://www.yuzhan.me/post/2014-02-16-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AB%EF%BC%89%E6%96%B0%E7%9A%84%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-02-16-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AB%EF%BC%89%E6%96%B0%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;p&gt;我们之前介绍第二种方法，用栏目的path来定义结构，最后达到一条语句输出的结果。如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/一条sql输出所有栏目1.png&#34; alt=&#34;一条sql输出所有栏目&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;通过这个结构，我们不难想象，这个结构的关键就在于path。但我们仔细看表的时候，发觉path和pid之间有些多余，有没有一种方法，更够简化呢，答案当然是有的。&lt;/p&gt;
+
+&lt;p&gt;上图，我们发现new_order是path和id的结合。于是可以思索，如果此结构本来就存在，我们如何做？&lt;/p&gt;
+
+&lt;p&gt;要解释这个问题，我们先给出表结构&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE TABLE `category` (
+  `struct` varchar(30) NOT NULL COMMENT &#39;栏目结构&#39;,
+  `name` varchar(30) NOT NULL COMMENT &#39;栏目名称&#39;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;整个表已经简化成只有两个字段了。我们思索了一下，如果一直用连接符&amp;#8221;-&amp;#8221;来连接，那么是不是显得很不好看。&lt;br /&gt;
+于是我们索性把它去掉，下面，我们看看表中的数据&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/02/新无限极分类.png&#34; alt=&#34;新无限极分类&#34; /&gt;&lt;br /&gt;
+看结构，我们知道，栏目是以&lt;strong&gt;01&lt;/strong&gt;开始，如果是他的子栏目，则变成&lt;strong&gt;0101&lt;/strong&gt;，而0101的兄弟栏目则是&lt;strong&gt;0102&lt;/strong&gt;，我们执行下一段sql&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SELECT * FROM category ORDER BY struct&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;得到下图，我们更能够清楚的看清结构&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/02/新结构层次图.png&#34; alt=&#34;新结构层次图&#34; /&gt;&lt;br /&gt;
+既然结构出来了，我们就应该想想该如何增删改。&lt;/p&gt;
+
+&lt;p&gt;之前的程序，我们添加的时候，没有去思考，栏目的id是多少，因为是自动递增的。我们只需要考虑它的的父级栏目就可以，而父级栏目也是很好确定的。&lt;/p&gt;
+
+&lt;p&gt;看这里，我们不仅要确定父级栏目，还要确定自己的编号。&lt;/p&gt;
+
+&lt;p&gt;经过我们观察，父级栏目的&lt;strong&gt;struct,&lt;/strong&gt;就是自己&lt;strong&gt;struct&lt;/strong&gt;去掉最后两位。比如，新闻的&lt;strong&gt;struct&lt;/strong&gt;为&lt;strong&gt;01&lt;/strong&gt;，他的子栏目体育新闻的&lt;strong&gt;struct&lt;/strong&gt;为&lt;strong&gt;0101&lt;/strong&gt;。同样，困扰我们的是，自己的编号怎么确定。&lt;/p&gt;
+
+&lt;p&gt;我们知道，struct必须为唯一，那么，那么子栏目，必须为01 &amp;#8211; 99，不能相同。&lt;/p&gt;
+
+&lt;p&gt;为了能让，栏目能够更好的利用，我们将下一个增加的子栏目定位，最后一个兄弟栏目的编号+1&lt;/p&gt;
+
+&lt;p&gt;这么说，如果我们要在世界下面加个子栏目，由于最后一个子栏目编号为&lt;strong&gt;0202,&lt;/strong&gt;也就是欧洲，于是我们新加的栏目编号为&lt;strong&gt;0203&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;于是，添加栏目所有的问题就在于怎样获得栏目编号，下面给出程序：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private function getLastStruct($pstruct=null)
+{
+
+    //没有父级栏目，也就是为顶级栏目
+    if(!$pstruct)
+        $sql = &amp;quot;select * from category where length(struct)=2 order by struct desc limit 1&amp;quot;;
+    else
+        $sql = &#39;select * from category where (length(struct) - length(&amp;quot;&#39;.$pstruct.&#39;&amp;quot;) = 2) AND (struct like &amp;quot;&#39;.$pstruct.&#39;%&amp;quot;) order by struct desc limit 1&#39;;
+
+    $result = $this-&amp;gt;db-&amp;gt;query($sql);
+    $row = $result-&amp;gt;fetch_assoc();
+    //没有父级栏目，没有任何结果，表示为初始栏目
+    if(!$row)
+        $struct = $pstruct.&amp;quot;01&amp;quot;;
+    else
+    {
+        $len = strlen($row[&#39;struct&#39;]);
+        $struct = sprintf(&amp;quot;%0&amp;quot;.$len.&amp;quot;d&amp;quot;,$row[&#39;struct&#39;] + 1);
+    }
+    return $struct;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下面给出添加函数，&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function add($pstruct,$name)
+{
+    //获取新的struct
+    $data[&#39;struct&#39;] = $this-&amp;gt;getLastStruct($pstruct);
+    $data[&#39;name&#39;] = $name;
+
+    $sql = &amp;quot;insert into category (struct,name) values(&#39;&amp;quot;.$data[&#39;struct&#39;].&amp;quot;&#39;,&#39;&amp;quot;.$data[&#39;name&#39;].&amp;quot;&#39;)&amp;quot;;
+    $this-&amp;gt;db-&amp;gt;query($sql);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;添加就写完了，明天继续给大家分享，删除和修改&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>无限级分类研究：（七）栏目的排序</title>
+      <link>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Fri, 17 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;p&gt;昨天我们的程序完成之后，发觉，我们栏目完全无法按照list_order来排序。实际情况中，除非对排序要求不是很高的栏目，比如地区，职业行业等等信息，其他的如，商品栏目之类，都是需要排序。&lt;/p&gt;
+
+&lt;p&gt;因此，我们不能不能不去思考这个问题。当我们思考起这个问题时，有发觉难以下手。&lt;/p&gt;
+
+&lt;p&gt;那我们应该整理一下思路，&lt;/p&gt;
+
+&lt;p&gt;我们排序的规则如下: 父栏目 &amp;#8212;-&amp;gt; 子栏目&lt;/p&gt;
+
+&lt;p&gt;也就是说，父栏目排完，再把子栏目插入父栏目之中。我们似乎又得做循环插入的事情。如果用到递归，那么，我们这个程序似乎就不是那么完美。那有没有别的方法呢？&lt;/p&gt;
+
+&lt;p&gt;答案是有的。我们的思路是先组合一组栏目，再组合另一组，最后对每个组合进行排序，如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/新排序方式思维图.jpg&#34; alt=&#34;新排序方式思维图&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+
+&lt;p&gt;下面就加入我们的程序，&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+ * 排序
+ */
+function listorder()
+{
+    $array = array();
+    foreach($this-&amp;gt;data as $key =&amp;gt; $val)
+    {
+        // 查找该栏目的层级
+        $array = explode(&amp;quot;-&amp;quot;,$val[&#39;new_order&#39;]);
+        // 去除第一个栏目，因为最高级均为0，没有比较的意义
+        array_shift($array);
+        $order_arr = array();
+        foreach($array as $k =&amp;gt; $v)
+        {
+            //组装新排序，sprintf格式化数据
+            $order_arr[] = sprintf(&amp;quot;%03d&amp;quot;,$this-&amp;gt;data[$v][&#39;list_order&#39;]);
+        }
+        //插入原有数据，方便之后的排序
+        $this-&amp;gt;data[$key][&#39;order&#39;] = implode(&amp;quot;-&amp;quot;,$order_arr);
+    }
+    
+    //根据新的order对数组排序，如果大家的php版本低于5.3,请不要使用匿名函数
+    uasort($this-&amp;gt;data,function($a,$b){
+        if($a[&#39;order&#39;] == $b[&#39;order&#39;]) return 0;
+        return $a[&#39;order&#39;] &amp;gt; $b[&#39;order&#39;] ? 1 : -1;
+    });
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上程序就是排序。&lt;br /&gt;
+可以看出，我们这类方法，适合于输出。但是，对于排序以及修改和删除，比较麻烦。&lt;br /&gt;
+这个方法在此告一段落。&lt;/p&gt;
+
+&lt;p&gt;当然，我们的无限级分类还没结束，接下来，我们将有更精彩的讲解，请大家多多关注。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>无限级分类研究：（六）栏目添加与修改</title>
+      <link>http://www.yuzhan.me/post/2014-01-14-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AD%EF%BC%89%E6%A0%8F%E7%9B%AE%E6%B7%BB%E5%8A%A0%E4%B8%8E%E4%BF%AE%E6%94%B9/</link>
+      <pubDate>Tue, 14 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-14-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AD%EF%BC%89%E6%A0%8F%E7%9B%AE%E6%B7%BB%E5%8A%A0%E4%B8%8E%E4%BF%AE%E6%94%B9/</guid>
+      <description>&lt;p&gt;接着昨天的文章讲。&lt;/p&gt;
+
+&lt;p&gt;如何添加栏目，关键点在于，path。这个path如何定义。我们仔细一想，会发现，就是父栏目的path和id的组合。&lt;/p&gt;
+
+&lt;p&gt;因此，我们添加栏目的时候，只用找出父栏目的id就可以了&lt;/p&gt;
+
+&lt;p&gt;下面是程序&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;header(&amp;quot;Content-type:text/html;charset=utf-8&amp;quot;);
+class category_2
+{
+    protected $db,$data=array(),$order_data=array();
+
+    function __construct()
+    {
+        $this-&amp;gt;db = new mysqli(&amp;quot;localhost&amp;quot;,&amp;quot;****&amp;quot;,&amp;quot;*****&amp;quot;,&amp;quot;fenlei&amp;quot;);
+        $this-&amp;gt;data();
+    }
+
+    /**
+     * 此函数只用于演示，数据过滤以及验证，请大家自行处理
+     */
+    function add()
+    {
+        //测试数据
+        // $_POST = array(&amp;quot;pid&amp;quot;=&amp;gt;10,&amp;quot;name&amp;quot;=&amp;gt;&amp;quot;武汉新闻&amp;quot;,&amp;quot;list_order&amp;quot;=&amp;gt;0);
+
+        $pid = $_POST[&#39;pid&#39;];
+        $name = $_POST[&#39;name&#39;];
+        $list_order = $_POST[&#39;list_order&#39;];
+
+        // 查询父栏目path
+        $sql = &amp;quot;select path from category_2 where `id`=&amp;quot;.$pid.&amp;quot; limit 1&amp;quot;;
+
+        $result = $this-&amp;gt;db-&amp;gt;query($sql);
+        $row = $result-&amp;gt;fetch_assoc();
+
+        // 构建新的path
+        $path = $row[&#39;path&#39;].&amp;quot;-&amp;quot;.$pid;
+
+        // 插入数据
+        $sql = &amp;quot;insert into category_2 (`pid`,`name`,`list_order`,`path`) values (&#39;{$pid}&#39;,&#39;{$name}&#39;,&#39;{$list_order}&#39;,&#39;{$path}&#39;)&amp;quot;;
+        $this-&amp;gt;db-&amp;gt;query($sql);
+    }
+
+    /**
+     * 获取数组
+     * @return void
+     */
+    function data()
+    {
+        $sql = &amp;quot;select *,concat(`path`,&#39;-&#39;,`id`) as new_order from category_2 order by new_order&amp;quot;;
+        $res = $this-&amp;gt;db-&amp;gt;query($sql);
+        while($row = $res-&amp;gt;fetch_assoc())
+            $this-&amp;gt;data[$row[&#39;id&#39;]] = $row;
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们只用构建一个表单，就可以添加（请读者自行根据之前的程序，写出表单，如果实在需要，到时候会整理一起发）。&lt;/p&gt;
+
+&lt;p&gt;关于修改，这里我们也会顺带说说删除。&lt;/p&gt;
+
+&lt;p&gt;我们知道每一个栏目的path和父栏目的path结合紧密。因此，当栏目修改父栏目时，考虑的不仅仅是当前栏目，还得考虑他的后代栏目。对于当前栏目的修改，可以说还不算麻烦，但对于后代栏目，我们该如何修改呢？&lt;/p&gt;
+
+&lt;p&gt;我们先看看一下程序。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function edit()
+    {
+        //测试数据
+        // $_POST = array(&#39;id&#39;=&amp;gt;2,&#39;pid&#39;=&amp;gt;8);
+         //栏目id
+        $id = $_POST[&#39;id&#39;];
+        //更新后的父栏目id
+        $pid = $_POST[&#39;pid&#39;];
+
+        //获取栏目原父id和path
+        $sql = &amp;quot;select pid,path from category_2 where `id`=&amp;quot;.$id.&amp;quot; limit 1&amp;quot;;
+        $result = $this-&amp;gt;db-&amp;gt;query($sql);
+        $row = $result-&amp;gt;fetch_assoc();
+        $old_pid = $row[&#39;pid&#39;];
+        $ori_path = $row[&#39;path&#39;];
+        $old_path = $ori_path.&amp;quot;-&amp;quot;.$id;
+
+        // 获取新父栏目path
+        $sql = &amp;quot;select path from category_2 where `id`=&amp;quot;.$pid.&amp;quot; limit 1&amp;quot;;
+        $result = $this-&amp;gt;db-&amp;gt;query($sql);
+        $row = $result-&amp;gt;fetch_assoc();
+        $new_path = $row[&#39;path&#39;].&amp;quot;-&amp;quot;.$pid;
+
+        // 更新该栏目
+$sql = &amp;quot;update category_2 set `path`=&#39;{$new_path}&#39;,`pid`=&#39;{$pid}&#39; where `id`=&#39;{$id}&#39;&amp;quot;;
+$this-&amp;gt;db-&amp;gt;query($sql);
+        //
+
+        // 更新后代栏目
+        $sql = &amp;quot;select `id`,`pid`,`name`,`path`,concat(`path`,&#39;-&#39;,`id`) new_order from category_2 where `path` like &#39;{$old_path}%&#39;&amp;quot;;
+        //获取所有后代元素
+        $result = $this-&amp;gt;db-&amp;gt;query($sql);
+        $data = array();
+        while($row = $result-&amp;gt;fetch_assoc())
+        {
+            // 更新后代元素path
+            $descend_path = str_replace($ori_path, $new_path, $row[&#39;path&#39;]);
+            $sql = &amp;quot;update category_2 set `path`=&#39;{$descend_path}&#39; where `id`=&amp;quot;.$row[&#39;id&#39;];
+            $this-&amp;gt;db-&amp;gt;query($sql);
+        }
+    }
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们将体育新闻放到欧洲栏目之下，执行之后，我们输出可以得到如下结果&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/无限级分类移动父级栏目1.png&#34; alt=&#34;无限级分类移动父级栏目&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;经过这么多步骤，我们终于完成了移动栏目。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;对比之前的程序，我们发现，该结构最大的有点是效率，但得到效率的同时，我们却花却大量的程序去更新数据。&lt;/strong&gt;&lt;strong&gt;也就是说，用写的效率换取读的效率&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;所以，当我写程序的时候，需要针对项目，来做取舍。&lt;/p&gt;
+
+&lt;p&gt;那么这个方法完结了么？哈哈，我想跟大家说，这种方法还没完结，如果你已经发现我“漏掉”了什么，那么我下篇文章将好好跟大家说说！&lt;/p&gt;
+
+&lt;p&gt;尽请期待！&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

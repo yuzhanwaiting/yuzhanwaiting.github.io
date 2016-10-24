@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微端生活</title>
+    <link>http://www.yuzhan.me/tags/php/feed/index.xml</link>
+    <description>Recent content on 微端生活</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <atom:link href="http://www.yuzhan.me/tags/php/feed/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>php 数组中插入元素</title>
+      <link>http://www.yuzhan.me/post/2014-01-09-php-%E6%95%B0%E7%BB%84%E4%B8%AD%E6%8F%92%E5%85%83%E7%B4%A0/</link>
+      <pubDate>Thu, 09 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-09-php-%E6%95%B0%E7%BB%84%E4%B8%AD%E6%8F%92%E5%85%83%E7%B4%A0/</guid>
+      <description>&lt;p&gt;因为，手头上有些事，可能需要这个需求。乍一看，我们会直接想到往数组中插入某个值。对于&lt;strong&gt;偏移量和键值相等的数组&lt;/strong&gt;来说是比较简单的事。&lt;/p&gt;
+
+&lt;p&gt;比如，从开头插入，我们可以选择&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;array_unshift()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;,从末尾插入，我们可以选择&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;array_push&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;,如果只是从数组当中插入呢，php也提供给我们很好的函数&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;array_splice()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;关于&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;array_splice&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个函数，有必要说一下，这个函数原本的功能适用于数组替换。&lt;br /&gt;
+&lt;strong&gt;array array_splice ( array &amp;amp;$input , int $offset [, int $length [, array $ replacement ]] )&lt;/strong&gt;&lt;br /&gt;
+其中&lt;br /&gt;
+第一个参数 &amp;amp;$input 为要传入的数组，注意，这里用了&amp;amp;符号，我们知道可以对原数组直接操作。&lt;br /&gt;
+第二个参数 $offset 其实位置，从哪里开始替换，也就是数组下标&lt;br /&gt;
+第三个参数 $length 替换长度，默认不填则表示道数组结尾部分，0表示直接该下标后追加，其他后面元素向后偏移一个单位&lt;br /&gt;
+第四个参数 $replacement 替换元素，此处不填，则表示删除&lt;br /&gt;
+比如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$input = array(&amp;quot;red&amp;quot;, &amp;quot;green&amp;quot;, &amp;quot;blue&amp;quot;, &amp;quot;yellow&amp;quot;);
+array_splice($input, 2, 1, &amp;quot;demo&amp;quot;);
+//print_r($input)
+/*Array
+(
+    [0] =&amp;amp;gt; red
+    [1] =&amp;amp;gt; green
+    [2] =&amp;amp;gt; demo
+    [3] =&amp;amp;gt; yellow
+)*/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;根据上面所说的，我们可以很简单的模拟,就可以实现往数组中插入元素&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$input = array(&amp;quot;red&amp;quot;, &amp;quot;green&amp;quot;, &amp;quot;blue&amp;quot;, &amp;quot;yellow&amp;quot;);
+array_splice($input, 3, 0, &amp;quot;purple&amp;quot;);
+
+// print_r($input);
+/*Array
+(
+    [0] =&amp;amp;gt; red
+    [1] =&amp;amp;gt; green
+    [2] =&amp;amp;gt; blue
+    [3] =&amp;amp;gt; purple
+    [4] =&amp;amp;gt; yellow
+)*/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面讲了那么多，我们思考一下，，&lt;strong&gt;偏移量和数组不相等的数组&lt;/strong&gt;如何添加,思考之后，得出如下代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+ * 往数组中插入元素
+ * @param  mix $value 要插入的值
+ * @param  key $key   mix 插入元素的位置
+ * @param  array $array 源数组
+ * @return array        新数组
+ */
+function insert_array($value,$key,$array)
+{
+    //新建数组，用户返回
+    $return_array = array();
+    foreach($array as $k =&amp;amp;gt; $v)
+    {
+        //保持原有数组
+        $return_array[$k] = $v;
+        //当插入位置与值相等，此时，讲元素插入数组
+        if ($key == $k)
+        {
+            //如果为数组，则循环添加
+            if(is_array($value))
+            {
+                foreach($value as $sk =&amp;amp;gt; $sv)
+                    $return_array[$sk] = $sv;
+            }
+            else//非数组，则单一添加
+                $return_array[] = $value;
+        }
+    }
+    return $return_array;
+}
+
+//做个测试
+$array = array(&amp;quot;demo&amp;quot;=&amp;amp;gt;&amp;quot;a&amp;quot;,&amp;quot;de&amp;quot;=&amp;amp;gt;&amp;quot;b&amp;quot;,&amp;quot;ke&amp;quot;=&amp;amp;gt;&amp;quot;c&amp;quot;);
+
+//在demo下标后插入new
+$array = insert_array(&amp;quot;new&amp;quot;,&amp;quot;demo&amp;quot;,$array);
+
+//print_r($array);
+/*Array
+(
+    [demo] =&amp;amp;gt; a
+    [0] =&amp;amp;gt; new
+    [de] =&amp;amp;gt; b
+    [ke] =&amp;amp;gt; c
+)*/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上就是全部内容，如果有正确的地方，还望指正&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>计算两个数组差集方法的优化</title>
+      <link>http://www.yuzhan.me/post/2014-01-07-%E5%85%B3%E4%BA%8E%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%95%B0%E7%BB%84%E5%B7%AE%E9%9B%86%E7%9A%84%E6%80%9D%E8%80%83/</link>
+      <pubDate>Tue, 07 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-07-%E5%85%B3%E4%BA%8E%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%95%B0%E7%BB%84%E5%B7%AE%E9%9B%86%E7%9A%84%E6%80%9D%E8%80%83/</guid>
+      <description>&lt;p&gt;之前做一个项目，其中涉及到计算两个数组之间的差集。于是毫不犹豫的情况下选择了array_diff。&lt;/p&gt;
+
+&lt;p&gt;事隔多天之后，再回头来看，觉得貌似不太满意，重新做了个测试。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;首先构建数组&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$array = array();
+$chars=&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890+-_@#$%&amp;amp;^*()!&#39;;
+
+for($i=0;$i&amp;amp;lt;100000;$i++)
+{
+    $len = rand(1,50);
+    $str = substr(str_shuffle($chars),0,$len).rand(1,90000);
+    array_push($array,$str);
+}
+
+$filename = &amp;quot;one.php&amp;quot;;
+$content = &amp;quot;&amp;amp;lt;?php return &amp;quot;.var_export($array,true).&amp;quot;?&amp;amp;gt;&amp;quot;;
+$handle = fopen($filename,&amp;quot;w&amp;quot;);
+fwrite($handle,$content);
+fclose($handle);
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;讲数组存入两个文件，one.php,two.php&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;计算两个数组的差集&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;方法一&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//求两个数组之间的差集
+$arr1 = include_once(&amp;quot;one.php&amp;quot;);
+$arr2 = include_once(&amp;quot;two.php&amp;quot;);
+
+$start_time = microtime();
+
+$one = array_diff($arr1,$arr2);
+$end_time = microtime();
+
+echo count($one).&amp;quot;&amp;amp;lt;br/&amp;amp;gt;&amp;quot;;
+var_dump($end_time-$start_time);
+//输出0,float(0.25),此处取平均值
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;方法二&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//求两个数组之间的差集
+$arr1 = include_once(&amp;quot;one.php&amp;quot;);
+$arr2 = include_once(&amp;quot;two.php&amp;quot;);
+$start_time = microtime();
+$temp = array_flip($arr2);
+foreach($arr1 as $key =&amp;amp;gt; $val)
+  if(isset($temp[$val]))
+    unset($arr1[$key]);
+
+$end_time = microtime();
+
+echo count($arr1).&amp;quot;&amp;amp;lt;br/&amp;amp;gt;&amp;quot;;
+var_dump($end_time-$start_time);
+
+//输出0,float(0.078) ,此处取平均值
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从上面的实验得知，方法二的时间较为缩短，于是上网搜了一下资料得知：&lt;br /&gt;
+&lt;strong&gt;键是进行 HASH 组织的，查找很快；&lt;/strong&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;strong&gt;而 Value 只是由 Key 组织存放，本身没有索引，每次查找都是遍历。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;当然，这个一时无聊所做的测试，对于网站而言，这点速度的优化算不上什么。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

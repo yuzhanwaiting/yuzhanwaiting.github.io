@@ -1,0 +1,678 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>无限级分类研究：（二）具体实现 - 微端生活</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description" content="之前的文章已经说明，如何获取自己。按照之前的图片逻辑，我们会选取第一级栏目，于是有以下代码 /** * 获取栏目下所有后代栏目 * @param int $id 栏目id * @return array */">
+  <meta name="author" content="yuzhanwaiting">
+  <meta itemprop="name" content="无限级分类研究：（二）具体实现 - 微端生活">
+  <meta itemprop="description" content="之前的文章已经说明，如何获取自己。按照之前的图片逻辑，我们会选取第一级栏目，于是有以下代码 /** * 获取栏目下所有后代栏目 * @param int $id 栏目id * @return array */">
+  <meta itemprop="image" content="http://www.yuzhan.me/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+  
+  <link rel="shortcut icon" href="http://www.yuzhan.me/img/favicon.ico"/>
+  <link rel="apple-touch-icon" href="http://www.yuzhan.me/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://www.yuzhan.me/apple-touch-icon.png" />
+  <link rel="stylesheet" href="http://www.yuzhan.me/highlight/styles/github.css">
+  <script src="http://www.yuzhan.me/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <link rel="stylesheet" href="http://www.yuzhan.me/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="http://www.yuzhan.me/css/style.css">
+</head>
+
+<body>
+  <header>
+    <div>
+  
+  <div id="imglogo">
+    <a href="http://www.yuzhan.me/"><img src="http://www.yuzhan.me/img/author.jpg" alt="微端生活" title="微端生活"/></a>
+  </div>
+  
+  <div id="textlogo">
+    <h1 class="site-name"><a href="http://www.yuzhan.me/" title="微端生活">微端生活</a></h1>
+    <h2 class="blog-motto">程序生活和小说创作者</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="http://www.yuzhan.me/post/2014-01-10-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%BA%8C%EF%BC%89%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0/" title="无限级分类研究：（二）具体实现" itemprop="url">无限级分类研究：（二）具体实现</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://www.yuzhan.me/" title="yuzhanwaiting">yuzhanwaiting</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2014-01-10 12:24:34 &#43;0000 UTC" itemprop="datePublished">2014年01月10日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+    <p>之前的文章已经说明，如何获取自己。按照之前的图片逻辑，我们会选取第一级栏目，于是有以下代码</p>
+
+<pre><code>/**
+     * 获取栏目下所有后代栏目
+     * @param  int $id 栏目id
+     * @return array
+     */
+    function get_array($id)
+    {
+        //此处get_child我们已经说过，是去除所有子栏目,其中id为栏目id
+        $res = $this-&gt;get_child($id);
+    }
+</code></pre>
+
+<p>打印以上数组，我们会得到第一层级，如果要得到第二层级，我们得再循环一次，于是有</p>
+
+<pre><code>function get_array($id)
+    {
+        $res = $this-&gt;get_child($id);
+        //当数组不为空的时候，即是有后代元素
+        if (count($res) &gt; 0)
+        {
+            foreach($res as $key =&gt; $val)
+               $data[$key]['son'] = $this-&gt;get_child($val['id']);
+        }
+    }
+//由于结果太长，这这里只打印一组结果
+/**
+    [6] =&gt; Array
+        (
+            [son_list] =&gt; Array
+                (
+                    [8] =&gt; Array
+                        (
+                            [id] =&gt; 8
+                            [pid] =&gt; 6
+                            [name] =&gt; 欧洲
+                            [list_order] =&gt; 6
+                        )
+
+                    [7] =&gt; Array
+                        (
+                            [id] =&gt; 7
+                            [pid] =&gt; 6
+                            [name] =&gt; 中东
+                            [list_order] =&gt; 0
+                        )
+
+                )
+
+        )
+*/
+</code></pre>
+
+<p><strong>以上结果虽然输出了自后代，带这种模式肯定不是我们需要的，因为无限极不断完善之后，层级越多，数组嵌套层次越多，到时候读取，会极大的影响性能。</strong>因此，我们加入level来表示栏目的层级。</p>
+
+<p>在<a title="无限级分类研究：（一）初步构想" href="/archives/50.html" target="_blank"> 无限级分类研究：（一）初步构想</a> 中，我们已经列出了数组模式，考虑到上面所说的，我们给数组，加上层级。<br />
+第一级为level = 1,依次叠加</p>
+
+<pre><code>array (
+    6 =&gt; array ('id' =&gt; '6','pid' =&gt; '0','name' =&gt; '世界','list_order' =&gt; '4','level' =&gt; 1,),
+    8 =&gt; array ('id' =&gt; '8','pid' =&gt; '6','name' =&gt; '欧洲','list_order' =&gt; '6','level' =&gt; 2,),
+    9 =&gt; array ('id' =&gt; '9','pid' =&gt; '8','name' =&gt; '俄罗斯','list_order' =&gt; '0','level' =&gt; 3,),
+    7 =&gt; array ('id' =&gt; '7','pid' =&gt; '6','name' =&gt; '中东','list_order' =&gt; '0','level' =&gt; 2,),
+    1 =&gt; array ('id' =&gt; '1','pid' =&gt; '0','name' =&gt; '新闻','list_order' =&gt; '0','level' =&gt; 1,),
+    3 =&gt; array ('id' =&gt; '3','pid' =&gt; '1','name' =&gt; '社会新闻','list_order' =&gt; '3','level' =&gt; 2,),
+    10 =&gt; array ('id' =&gt; '10','pid' =&gt; '3','name' =&gt; '大楚新闻','list_order' =&gt; '0','level' =&gt; 3,),
+    2 =&gt; array ('id' =&gt; '2','pid' =&gt; '1','name' =&gt; '体育新闻','list_order' =&gt; '0','level' =&gt; 2,),
+    4 =&gt; array ('id' =&gt; '4','pid' =&gt; '2','name' =&gt; 'NBA','list_order' =&gt; '5','level' =&gt; 3,),
+    5 =&gt; array ('id' =&gt; '5','pid' =&gt; '2','name' =&gt; '欧冠','list_order' =&gt; '2','level' =&gt; 3,),
+    11 =&gt; array ('id' =&gt; '11','pid' =&gt; '5','name' =&gt; '皇马','list_order' =&gt; '0','level' =&gt; 4,)
+)
+</code></pre>
+
+<p>仔细一想，我们改进之前所写的get_child()成员函数，让其支持level</p>
+
+<pre><code>/**
+     * 获取对应子栏目
+     * @param  int $pid   父id
+     * @param  int $level 层级
+     * @return array
+     */
+    function get_child($pid,$level)
+    {
+        $res_array = array();
+        foreach($this-&gt;data as $key =&gt; $val)
+        {
+            if ($val['pid'] == $pid)
+            {
+                $val['level'] = $level;
+                $res_array[$key] = $val;
+            }
+        }
+        return $res_array;
+    }
+</code></pre>
+
+<p>这个成员函数写好了，我们可以做最后的事情了。但是，慢着，我们还需要增加一个函数，可以网数组中随意插入一段数组。<br />
+等等，这个貌似已经说过了。<br />
+哈哈，大家发现了吗，<a href="/2014/01/09/php-数组中插入元素/">php 数组中插入元素</a>这篇文章，我们直接就已经说过了。此处，我们稍加改进，把函数直接拿过来。</p>
+
+<pre><code>/**
+ * 往数组中插入元素
+ * @param  mix $value 要插入的值
+ * @param  key $key   mix 插入元素的位置
+ * @param  array $array 源数组
+ * @return array        新数组
+ */
+function insert_array($value,$key,$array)
+{
+    //新建数组，用户返回
+    $return_array = array();
+    foreach($array as $k =&gt; $v)
+    {
+        //保持原有数组
+        $return_array[$k] = $v;
+        //当插入位置与值相等，此时，讲元素插入数组
+        if ($key == $k)
+        {
+            //如果为数组，则循环添加
+            if(is_array($value))
+            {
+                foreach($value as $sk =&gt; $sv)
+                    $return_array[$sk] = $sv;
+            }
+            else//非数组，则单一添加
+                $return_array[] = $value;
+        }
+    }
+    return $return_array;
+}
+</code></pre>
+
+<p>有了上面的工具，我们可以构想如下代码了，这里我先贴出来</p>
+
+<pre><code>/**
+     * 获取栏目下所有后代栏目
+     * @param  int $id 栏目id
+     * @return array
+     */
+    function get_array($id)
+    {
+        static $level = 1;
+        $res = $this-&gt;get_child($id,$level);
+        if($level == 1)
+            $this-&gt;order_data = $res;
+        else
+            $this-&gt;order_data = insert_array($res,$id,$this-&gt;order_data);
+        if (count($res) &gt; 0)
+        {
+            $level++;
+            foreach($res as $key =&gt; $val)
+                $this-&gt;get_array($val['id']);
+            $level--;
+        }
+    }
+</code></pre>
+
+<p>一下贴这么多代码，大家可能不理解，那我就一步步跟大家说。</p>
+
+<p><code>static $level = 1;</code></p>
+
+<p>static用于函数内部的变量，表示静态变量，此变量有一个特点，函数初次执行之，会进行初始化，递归中再次调用，不会对其再初始化。</p>
+
+<pre><code>//获取字栏目
+ $res = $this-&gt;et_child($id,$level);
+</code></pre>
+
+<p>&nbsp;</p>
+
+<pre><code>if($level == 1)
+            $this-&gt;order_data = $res;
+        else
+            $this-&gt;order_data = insert_array($res,$id,$this-&gt;order_data);
+</code></pre>
+
+<p>上面程序似乎很难理解。其实，我们仔细观察，觉得，也没有那么复杂。我们发现，层级为一级时(level = 1),直接将结果赋给排序后的数组。当层级不为一级时，将得到的结果，插入相应的父层级之后。画个流程图让大家明白</p>
+
+<p><img src="/public/img/images/2014/01/无限级分类操作示意图.png" alt="无限级分类操作示意图" /></p>
+
+<pre><code>if (count($res) &gt; 0)
+        {
+            $level++;
+            foreach($res as $key =&gt; $val)
+                $this-&gt;get_array($val['id']);
+            $level--;
+        }
+</code></pre>
+
+<p>这一段应该是最难理解的（个人认为）.于是我们分几步来分解<br />
+<strong>第一步：</strong></p>
+
+<p><code>if (count($res) &gt; 0){}</code></p>
+
+<p>判断是否含有子栏目，如果没有，则不做任何操作</p>
+
+<p><code>$level++;</code></p>
+
+<p>由于是操作子栏目，比如，我们的数据中，<strong>世界</strong>为<strong>level=1</strong>，<strong>欧洲</strong>为<strong>level=2</strong>。我们每往下一级循环的时候，level都会加1</p>
+
+<pre><code>foreach($res as $key =&gt; $val)
+                $this-&gt;get_array($val['id']);
+</code></pre>
+
+<p>递归调用，将对应的数组，插入数组中</p>
+
+<p><code>$level--;</code></p>
+
+<p>回归新的层级<br />
+这两句，看不明白不要紧，同样的，我们画个流程图，给大家看看就明白了。</p>
+
+<p><img src="/public/img/images/2014/01/无限级分类递归示意图.png" alt="无限级分类递归示意图" /></p>
+
+<p>上图中，我们需要注意的是，每次<strong>foreach</strong>都没执行完，直到它没有子栏目，则会一步步往上递归。</p>
+
+<p>好了，排序已经完成了，接下来就是输出了。敬请关注无限级分类第三篇吧</p>
+
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+<div class="article-tags">
+  <span></span>
+  
+  <a href="http://www.yuzhan.me/tags/%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB">无限级分类</a>
+  
+  <a href="http://www.yuzhan.me/tags/%E9%80%92%E5%BD%92">递归</a>
+  
+</div>
+
+
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="http://www.yuzhan.me/categories/php">php</a>
+  
+</div>
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="http://www.yuzhan.me/post/2014-01-10-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%BA%8C%EF%BC%89%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0/" data-title="无限级分类研究：（二）具体实现" data-tsina="" class="share clearfix">
+    </div>
+  </div>
+</footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="http://www.yuzhan.me/categories/js%e5%89%8d%e7%ab%af" title="js前端">js前端<sup>3</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/linux" title="linux">linux<sup>4</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/php" title="php">php<sup>14</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/python" title="python">python<sup>3</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/vagrant" title="vagrant">vagrant<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e5%85%b6%e4%bb%96" title="其他">其他<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e6%95%b0%e6%8d%ae%e5%ba%93" title="数据库">数据库<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" title="无限级分类">无限级分类<sup>3</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="http://www.yuzhan.me/tags/composer" title="composer">composer<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/php" title="php">php<sup>2</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/sphinx" title="sphinx">sphinx<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/tlpi" title="tlpi">tlpi<sup>4</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/vagrant" title="vagrant">vagrant<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" title="学习笔记">学习笔记<sup>7</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%be%ae%e4%bf%a1" title="微信">微信<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%bf%83%e5%be%97" title="心得">心得<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%95%b0%e7%bb%84" title="数组">数组<sup>3</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6io" title="文件io">文件io<sup>4</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" title="文件描述符">文件描述符<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" title="无限级分类">无限级分类<sup>5</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1" title="框架设计">框架设计<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e7%94%a8%e6%88%b7%e5%8c%b9%e9%85%8d" title="用户匹配">用户匹配<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f" title="设计模式">设计模式<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e9%80%92%e5%bd%92" title="递归">递归<sup>3</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e9%9d%9e%e9%80%92%e5%bd%92" title="非递归">非递归<sup>1</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2016-03">2016年03月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-12">2015年12月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-11">2015年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-09">2015年09月</a><span class="archive-list-count">4</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-08">2015年08月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-01">2015年01月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-03">2014年03月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-02">2014年02月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-01">2014年01月</a><span class="archive-list-count">15</span>
+      </li>
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="http://www.yuzhan.me/tags/composer" style="font-size: 12px;">composer</a>
+    
+    <a href="http://www.yuzhan.me/tags/php" style="font-size: 12px;">php</a>
+    
+    <a href="http://www.yuzhan.me/tags/sphinx" style="font-size: 12px;">sphinx</a>
+    
+    <a href="http://www.yuzhan.me/tags/tlpi" style="font-size: 12px;">tlpi</a>
+    
+    <a href="http://www.yuzhan.me/tags/vagrant" style="font-size: 12px;">vagrant</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" style="font-size: 12px;">学习笔记</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%be%ae%e4%bf%a1" style="font-size: 12px;">微信</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%bf%83%e5%be%97" style="font-size: 12px;">心得</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%95%b0%e7%bb%84" style="font-size: 12px;">数组</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6io" style="font-size: 12px;">文件io</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" style="font-size: 12px;">文件描述符</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" style="font-size: 12px;">无限级分类</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1" style="font-size: 12px;">框架设计</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e7%94%a8%e6%88%b7%e5%8c%b9%e9%85%8d" style="font-size: 12px;">用户匹配</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f" style="font-size: 12px;">设计模式</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e9%80%92%e5%bd%92" style="font-size: 12px;">递归</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e9%9d%9e%e9%80%92%e5%bd%92" style="font-size: 12px;">非递归</a>
+    
+  </div>
+</div>
+
+
+
+  
+
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  
+  <div class="line">
+    <span></span>
+    <div style='background:no-repeat url("http://www.yuzhan.me/img/author.jpg") left top;-webkit-background-size:6.875em 6.875em;-moz-background-size:6.875em 6.875em;background-size:6.875em 6.875em;' class="author" ></div>
+  </div>
+  
+  
+  <section class="info">
+    <p>程序 <br/> 人生</p>
+  </section>
+  
+  <div class="social-font clearfix">
+    
+    
+    
+    <a href="https://github.com/yuzhanwaiting" target="_blank" title="github"></a>
+    
+    
+    
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2016
+    
+    <a href="http://www.yuzhan.me/" target="_blank" title="yuzhanwaiting">yuzhanwaiting</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="http://www.yuzhan.me/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:http:\/\/www.yuzhan.me\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+<link rel="stylesheet" href="http://www.yuzhan.me/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="http://www.yuzhan.me/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+
+</body>
+</html>
