@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微端生活</title>
+    <link>http://www.yuzhan.me/categories/%E5%85%B6%E4%BB%96/feed/index.xml</link>
+    <description>Recent content on 微端生活</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <atom:link href="http://www.yuzhan.me/categories/%E5%85%B6%E4%BB%96/feed/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>github pages 博客搭建</title>
+      <link>http://www.yuzhan.me/post/2015-12-17-github_pages%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</link>
+      <pubDate>Thu, 17 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-12-17-github_pages%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</guid>
+      <description>
+
+&lt;h1 id=&#34;概述&#34;&gt;概述：&lt;/h1&gt;
+
+&lt;p&gt;互联网行业，有许多技术人员有写博客的习惯。&lt;br /&gt;
+很多网站提供了该平台，比如博客园或者csdn等&lt;br /&gt;
+然而，这类网站风格过于单一，又不支持一些新的格式，例如&lt;code&gt;markdown&lt;/code&gt;等，给实际操作带来了很大的不便&lt;br /&gt;
+如果自己搭建博客，则需要空间，域名等，二而这些也需要自己去维护。相比之下，更加麻烦&lt;br /&gt;
+今天，就给大家介绍一下&lt;code&gt;github&lt;/code&gt;提供的博客功能&amp;ndash;&lt;strong&gt;github pages&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;操作说明&#34;&gt;操作说明：&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-环境准备&#34;&gt;1 环境准备&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;系统： &lt;code&gt;Linux(ubuntu)&lt;/code&gt;,&lt;code&gt;Mac OS&lt;/code&gt;,&lt;code&gt;Windows&lt;/code&gt;(不推荐使用)&lt;/li&gt;
+&lt;li&gt;软件： &lt;code&gt;ruby&lt;/code&gt;, &lt;code&gt;rubygems&lt;/code&gt;, &lt;code&gt;jekyll&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;平台： &lt;code&gt;github&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;2-项目创建&#34;&gt;2 项目创建&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;在&lt;code&gt;github&lt;/code&gt;上创建新仓库，命名为: &lt;code&gt;username.github.io&lt;/code&gt;
+此处&lt;code&gt;username&lt;/code&gt; 必须为&lt;code&gt;github&lt;/code&gt;帐号名称,
+命名不允许自定义，必须为 &lt;code&gt;username.github.io&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;克隆项目到本地，并推送新信息&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//克隆仓库到本地
+~ $ git clone https://github.com/username/username.github.io
+~ $ cd username.github.io
+
+//新增首页文件
+~ $ echo &amp;quot;Hello World&amp;quot; &amp;gt; index.html
+~ $ git add --all
+~ $ git commit -m &amp;quot;Initial commit&amp;quot;
+
+//将首页文件推送至服务器
+~ $ git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;访问页面 &lt;code&gt;http://username.github.io&lt;/code&gt; 则显示刚写入文件的信息&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;3-本地环境创建-以ubuntu为参考&#34;&gt;3 本地环境创建（以ubuntu为参考）&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;ruby-install&lt;/code&gt;，此用于安装ruby环境&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+~ $ tar -xzvf ruby-install-0.5.0.tar.gz
+~ $ cd ruby-install-0.5.0/
+~ $ sudo make install
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;接下来安装&lt;code&gt;ruby&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo ruby-install --system ruby
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;由于国内的&lt;code&gt;gem&lt;/code&gt;源收到各种各样的限制，因此，需要更换&lt;code&gt;gem&lt;/code&gt;源&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ gem sources --remove https://rubygems.org/
+~ $ gem sources -a https://ruby.taobao.org/
+~ $ gem sources -l
+*** CURRENT SOURCES ***
+
+https://ruby.taobao.org
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;jekyll&lt;/code&gt;，&lt;code&gt;jekyll&lt;/code&gt;是用来生成静态网站的工具，&lt;code&gt;github pages&lt;/code&gt;正是基于此构建&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo gem install jekyll
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;pygments&lt;/code&gt;,由于&lt;code&gt;jekyll&lt;/code&gt;语法着色依赖于，&lt;code&gt;python&lt;/code&gt;库&lt;code&gt;pygments&lt;/code&gt;，因此需要安装&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo apt-get install python-pip
+~ $ sudo pip install pygments
+~ $ sudo gem install pygments.rb
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;jekyll-paginate&lt;/code&gt;，用于支持分页&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo gem install jekyll-paginate
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;至此，环境搭建完成&lt;/p&gt;
+
+&lt;h3 id=&#34;4-jekyll简单介绍&#34;&gt;4. jekyll简单介绍&lt;/h3&gt;
+
+&lt;h4 id=&#34;目录结构&#34;&gt;目录结构&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;.
+├── _config.yml  
+├── _drafts
+|   ├── begin-with-the-crazy-ideas.textile
+|   └── on-simplicity-in-technology.markdown
+├── _includes
+|   ├── footer.html
+|   └── header.html
+├── _layouts
+|   ├── default.html
+|   └── post.html
+├── _posts
+|   ├── 2007-10-29-why-every-programmer-should-play-nethack.textile
+|   └── 2009-04-26-barcamp-boston-4-roundup.textile
+├── _data
+|   └── members.yml
+├── _site
+└── index.html
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;结构说明：&lt;/p&gt;
+
+&lt;p&gt;| 文件目录  |  描述  |
+| &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash; | &amp;mdash;&amp;mdash;&amp;ndash; |
+| _config.yml  | 保存配置数据。 |
+| _drafts      | drafts 未发布的文章。 |
+| _includes   | 你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。 |
+| _layouts   | layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中 |
+| _posts   | 这里放的就是你的文章了 |
+| _data   | 存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member |
+| _site   | 一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中。 |
+| index.html   | 全局首页 |
+| 其他文件   | 其他一些未被提及的目录和文件如  css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中 |&lt;/p&gt;
+
+&lt;h4 id=&#34;配置说明&#34;&gt;配置说明&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;# Dependencies
+highlighter:      pygments
+
+encoding:         &amp;quot;utf-8&amp;quot;
+
+# Setup
+title:            &#39;微端生活&#39;            
+tagline:          &#39;郁湛的个人博客&#39;
+description:      &#39;分享知识，记录知识！&#39;
+url:              http://hbphp.com
+
+author:
+  name:           &#39;yuzhanwaiting&#39;
+  url:            https://github.com/yuzhanwaiting
+
+paginate:         5
+paginate_path:    &amp;quot;page:num&amp;quot;
+gems:             [jekyll-paginate]
+
+
+# Custom vars
+version:          1.0.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;配置说明：&lt;/p&gt;
+
+&lt;p&gt;| 配置项 | 说明 |
+|:&amp;mdash;&amp;mdash;&amp;mdash;-|:&amp;mdash;&amp;mdash;&amp;ndash;:|
+| highlighter  | 高亮组件，一般选择pygments |
+| encoding     | 博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo; |
+| title        | 博客标题                 |
+| tagline      | 博客标语                 |
+| description  | 博客描述 |
+| url          | 博客地址 |
+| paginate     | 博客每页页数 |
+| paginate_path | 博客分页样式 |
+| gems     | 依赖哪些库 |&lt;/p&gt;
+
+&lt;h4 id=&#34;编写博客&#34;&gt;编写博客&lt;/h4&gt;
+
+&lt;p&gt;关于&lt;code&gt;jekyll&lt;/code&gt;具体的文档，可以查阅文档:&lt;a href=&#34;http://jekyll.bootcss.com/&#34;&gt;jekyll中文文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;按照&lt;code&gt;jekyll&lt;/code&gt;规范建立目录文档等&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;编写&lt;code&gt;markdown&lt;/code&gt;文档&lt;br /&gt;
+注意：&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;所有图片，静态文件等存放与根目录下资源文件夹（&lt;code&gt;assets&lt;/code&gt;或&lt;code&gt;public&lt;/code&gt;），加载路径为 &lt;code&gt;/assets/path/to/img&lt;/code&gt;或&lt;code&gt;/public/path/to/img&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;区块代码标记修改为&lt;code&gt;highlight&lt;/code&gt;标记&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;写好文档，直接推送至&lt;code&gt;github&lt;/code&gt;，等几分钟后就可以正常访问&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;5-配置域名&#34;&gt;5. 配置域名&lt;/h3&gt;
+
+&lt;p&gt;如果需要自定义域名,可以直接将域名作&lt;code&gt;CNAME&lt;/code&gt;解析为 &lt;code&gt;username.github.io.&lt;/code&gt;,注意后面有个&lt;code&gt;.&lt;/code&gt;,几分钟后就可以用新的域名访问&lt;code&gt;github pages&lt;/code&gt;博客了&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

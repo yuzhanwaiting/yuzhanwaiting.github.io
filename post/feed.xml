@@ -1,0 +1,1933 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post-rsses on 微端生活</title>
+    <link>http://www.yuzhan.me/post/feed/index.xml</link>
+    <description>Recent content in Post-rsses on 微端生活</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 17 Dec 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://www.yuzhan.me/post/feed/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>github pages 博客搭建</title>
+      <link>http://www.yuzhan.me/post/2015-12-17-github_pages%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</link>
+      <pubDate>Thu, 17 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-12-17-github_pages%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</guid>
+      <description>
+
+&lt;h1 id=&#34;概述&#34;&gt;概述：&lt;/h1&gt;
+
+&lt;p&gt;互联网行业，有许多技术人员有写博客的习惯。&lt;br /&gt;
+很多网站提供了该平台，比如博客园或者csdn等&lt;br /&gt;
+然而，这类网站风格过于单一，又不支持一些新的格式，例如&lt;code&gt;markdown&lt;/code&gt;等，给实际操作带来了很大的不便&lt;br /&gt;
+如果自己搭建博客，则需要空间，域名等，二而这些也需要自己去维护。相比之下，更加麻烦&lt;br /&gt;
+今天，就给大家介绍一下&lt;code&gt;github&lt;/code&gt;提供的博客功能&amp;ndash;&lt;strong&gt;github pages&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;操作说明&#34;&gt;操作说明：&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-环境准备&#34;&gt;1 环境准备&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;系统： &lt;code&gt;Linux(ubuntu)&lt;/code&gt;,&lt;code&gt;Mac OS&lt;/code&gt;,&lt;code&gt;Windows&lt;/code&gt;(不推荐使用)&lt;/li&gt;
+&lt;li&gt;软件： &lt;code&gt;ruby&lt;/code&gt;, &lt;code&gt;rubygems&lt;/code&gt;, &lt;code&gt;jekyll&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;平台： &lt;code&gt;github&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;2-项目创建&#34;&gt;2 项目创建&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;在&lt;code&gt;github&lt;/code&gt;上创建新仓库，命名为: &lt;code&gt;username.github.io&lt;/code&gt;
+此处&lt;code&gt;username&lt;/code&gt; 必须为&lt;code&gt;github&lt;/code&gt;帐号名称,
+命名不允许自定义，必须为 &lt;code&gt;username.github.io&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;克隆项目到本地，并推送新信息&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//克隆仓库到本地
+~ $ git clone https://github.com/username/username.github.io
+~ $ cd username.github.io
+
+//新增首页文件
+~ $ echo &amp;quot;Hello World&amp;quot; &amp;gt; index.html
+~ $ git add --all
+~ $ git commit -m &amp;quot;Initial commit&amp;quot;
+
+//将首页文件推送至服务器
+~ $ git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;访问页面 &lt;code&gt;http://username.github.io&lt;/code&gt; 则显示刚写入文件的信息&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;3-本地环境创建-以ubuntu为参考&#34;&gt;3 本地环境创建（以ubuntu为参考）&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;ruby-install&lt;/code&gt;，此用于安装ruby环境&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+~ $ tar -xzvf ruby-install-0.5.0.tar.gz
+~ $ cd ruby-install-0.5.0/
+~ $ sudo make install
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;接下来安装&lt;code&gt;ruby&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo ruby-install --system ruby
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;由于国内的&lt;code&gt;gem&lt;/code&gt;源收到各种各样的限制，因此，需要更换&lt;code&gt;gem&lt;/code&gt;源&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ gem sources --remove https://rubygems.org/
+~ $ gem sources -a https://ruby.taobao.org/
+~ $ gem sources -l
+*** CURRENT SOURCES ***
+
+https://ruby.taobao.org
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;jekyll&lt;/code&gt;，&lt;code&gt;jekyll&lt;/code&gt;是用来生成静态网站的工具，&lt;code&gt;github pages&lt;/code&gt;正是基于此构建&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo gem install jekyll
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;pygments&lt;/code&gt;,由于&lt;code&gt;jekyll&lt;/code&gt;语法着色依赖于，&lt;code&gt;python&lt;/code&gt;库&lt;code&gt;pygments&lt;/code&gt;，因此需要安装&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo apt-get install python-pip
+~ $ sudo pip install pygments
+~ $ sudo gem install pygments.rb
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;安装&lt;code&gt;jekyll-paginate&lt;/code&gt;，用于支持分页&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~ $ sudo gem install jekyll-paginate
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;至此，环境搭建完成&lt;/p&gt;
+
+&lt;h3 id=&#34;4-jekyll简单介绍&#34;&gt;4. jekyll简单介绍&lt;/h3&gt;
+
+&lt;h4 id=&#34;目录结构&#34;&gt;目录结构&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;.
+├── _config.yml  
+├── _drafts
+|   ├── begin-with-the-crazy-ideas.textile
+|   └── on-simplicity-in-technology.markdown
+├── _includes
+|   ├── footer.html
+|   └── header.html
+├── _layouts
+|   ├── default.html
+|   └── post.html
+├── _posts
+|   ├── 2007-10-29-why-every-programmer-should-play-nethack.textile
+|   └── 2009-04-26-barcamp-boston-4-roundup.textile
+├── _data
+|   └── members.yml
+├── _site
+└── index.html
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;结构说明：&lt;/p&gt;
+
+&lt;p&gt;| 文件目录  |  描述  |
+| &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash; | &amp;mdash;&amp;mdash;&amp;ndash; |
+| _config.yml  | 保存配置数据。 |
+| _drafts      | drafts 未发布的文章。 |
+| _includes   | 你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。 |
+| _layouts   | layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中 |
+| _posts   | 这里放的就是你的文章了 |
+| _data   | 存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member |
+| _site   | 一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中。 |
+| index.html   | 全局首页 |
+| 其他文件   | 其他一些未被提及的目录和文件如  css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中 |&lt;/p&gt;
+
+&lt;h4 id=&#34;配置说明&#34;&gt;配置说明&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;# Dependencies
+highlighter:      pygments
+
+encoding:         &amp;quot;utf-8&amp;quot;
+
+# Setup
+title:            &#39;微端生活&#39;            
+tagline:          &#39;郁湛的个人博客&#39;
+description:      &#39;分享知识，记录知识！&#39;
+url:              http://hbphp.com
+
+author:
+  name:           &#39;yuzhanwaiting&#39;
+  url:            https://github.com/yuzhanwaiting
+
+paginate:         5
+paginate_path:    &amp;quot;page:num&amp;quot;
+gems:             [jekyll-paginate]
+
+
+# Custom vars
+version:          1.0.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;配置说明：&lt;/p&gt;
+
+&lt;p&gt;| 配置项 | 说明 |
+|:&amp;mdash;&amp;mdash;&amp;mdash;-|:&amp;mdash;&amp;mdash;&amp;ndash;:|
+| highlighter  | 高亮组件，一般选择pygments |
+| encoding     | 博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo; |
+| title        | 博客标题                 |
+| tagline      | 博客标语                 |
+| description  | 博客描述 |
+| url          | 博客地址 |
+| paginate     | 博客每页页数 |
+| paginate_path | 博客分页样式 |
+| gems     | 依赖哪些库 |&lt;/p&gt;
+
+&lt;h4 id=&#34;编写博客&#34;&gt;编写博客&lt;/h4&gt;
+
+&lt;p&gt;关于&lt;code&gt;jekyll&lt;/code&gt;具体的文档，可以查阅文档:&lt;a href=&#34;http://jekyll.bootcss.com/&#34;&gt;jekyll中文文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;按照&lt;code&gt;jekyll&lt;/code&gt;规范建立目录文档等&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;编写&lt;code&gt;markdown&lt;/code&gt;文档&lt;br /&gt;
+注意：&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;所有图片，静态文件等存放与根目录下资源文件夹（&lt;code&gt;assets&lt;/code&gt;或&lt;code&gt;public&lt;/code&gt;），加载路径为 &lt;code&gt;/assets/path/to/img&lt;/code&gt;或&lt;code&gt;/public/path/to/img&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;区块代码标记修改为&lt;code&gt;highlight&lt;/code&gt;标记&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;写好文档，直接推送至&lt;code&gt;github&lt;/code&gt;，等几分钟后就可以正常访问&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;5-配置域名&#34;&gt;5. 配置域名&lt;/h3&gt;
+
+&lt;p&gt;如果需要自定义域名,可以直接将域名作&lt;code&gt;CNAME&lt;/code&gt;解析为 &lt;code&gt;username.github.io.&lt;/code&gt;,注意后面有个&lt;code&gt;.&lt;/code&gt;,几分钟后就可以用新的域名访问&lt;code&gt;github pages&lt;/code&gt;博客了&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>vagrant学习笔记(一)</title>
+      <link>http://www.yuzhan.me/post/2015-11-13-vagrant%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%28%E4%B8%80%29/</link>
+      <pubDate>Fri, 13 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-11-13-vagrant%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%28%E4%B8%80%29/</guid>
+      <description>
+
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+
+&lt;p&gt;Vagrant 是一款用来构建虚拟开发环境的工具，非常适合 php/python/ruby/java 这类语言开发 web 应用，“代码在我机子上运行没有问题”这种说辞将成为历史。&lt;/p&gt;
+
+&lt;p&gt;我们可以通过 Vagrant 封装一个 Linux 的开发环境，分发给团队成员。成员可以在自己喜欢的桌面系统（Mac/Windows/Linux）上开发程序，代码却能统一在封装好的环境里运行，非常霸气。&lt;/p&gt;
+
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+
+&lt;p&gt;1.安装virtualbox,下载地址：&lt;a href=&#34;http://download.virtualbox.org/virtualbox/5.0.10/VirtualBox-5.0.10-104061-Win.exe&#34; title=&#34;virtualbox&#34;&gt;virtualbox&lt;/a&gt;
+2.安装vagrant,下载地址：&lt;a href=&#34;https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4.msi&#34; title=&#34;vagrant&#34;&gt;vagrant&lt;/a&gt;
+根据软件提示一步步做&lt;/p&gt;
+
+&lt;h2 id=&#34;快速上手&#34;&gt;快速上手&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;//1. //创建目录存放项目
+$ mkdir vagrant_test 
+$ cd vagrant_test //切换目录
+
+//2.初始化项目
+//类似 git init可以初始化一个项目，无论该目录是否为空
+//vagrant init创建一个Vagrantfile,用于项目配置
+$ vagrant init 
+
+//3.添加box
+$ vagrant add box hashicorp/precise32
+
+//4.启动项目(在此之前修改Vagrantfile)
+$ vagrant up 
+
+//连接虚拟机
+$ vagrant ssh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;基础知识&#34;&gt;基础知识&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-boxs&#34;&gt;1. &lt;code&gt;Boxs&lt;/code&gt;&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;作为构建虚拟机的改进，vagrant使用基本的镜像快速的克隆一个虚拟机。这些基本的镜像就称之为box
+基本命令：
+* `add` `vagrant box add ADDRESS`
+    通过给定的地址添加一个box,地址可以如下
+    1. 公共镜像得缩略名 如 `hashicorp/precise32`
+    2. 文件路径，或者`http url` 如 `/home/package.box`
+    基本命令： `vagrant box add hicuenv /home/package.box`
+    3. 命令选项，`--force` 强制添加一个box
+
+* `list` `vagrant box list`
+    列出所有盒子
+* `remove` `vagrant box remove NAME`
+    删除特定的盒子
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;2-box-相关操作&#34;&gt;2. &lt;code&gt;box&lt;/code&gt;相关操作&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;* `vagrant up` //启动盒子，会采用`Vagrantfile`中得配置
+* `vagrant ssh` 登录虚拟机，不需要用户名和密码
+* `vagrant halt` 关闭虚拟机
+* `vagrant reload` 重新加载虚拟机配置，即`Vagrantfile`
+* `vagrant destroy` 销毁当前虚拟机，不会删除box，只会删除对box所有的改动
+* `vagrant stauts` 显示当前虚拟机状态
+* `vagrant suspend` 暂停当前主机
+* `vagrant resume` 恢复当前暂停的主机
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;3-vagrantfile-说明&#34;&gt;3. &lt;code&gt;Vagrantfile&lt;/code&gt;说明&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;config.vm.box&lt;/code&gt; 基础镜像
+项目中该项配置必须匹配，添加盒子的名字，操作如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ vagrant box add hicuenv /e/package.box
+//将 config.vm.box = &#39;base&#39; 替换为 hicuenv
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;config.vm.network&lt;/code&gt; 网络配置
+基本配置&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//将虚拟机的80端口映射到主机的8080端口
+config.vm.network &amp;quot;forwarded_port&amp;quot;, guest: 80, host: 8080 
+//将虚拟机的6379端口映射到主机的6379端口
+config.vm.network &amp;quot;forwarded_port&amp;quot;, guest: 6379, host: 6379 
+相关参数：       
+* `forwarded_port` 将虚拟机端口映射到主机，方便访问
+* `guest` 虚拟机端口
+* `host`  主机端口
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;config.vm.synced_folder&lt;/code&gt; 同步目录
+基本配置
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;
+//将本地src目录同步到 /srv/website。如果不存在/src/website，则尝试创建
+config.vm.synced_folder &amp;quot;src/&amp;quot;, &amp;quot;/srv/website&amp;quot;
+
+相关参数：
+* `disabled`： 禁止某些目录同步
+    禁止默认的目录同步
+    `config.vm.synced_folder &amp;quot;.&amp;quot;, &amp;quot;/vagrant&amp;quot;,disabled:true`
+* `owner`,`group`：指定所有者和所属组。默认情况下，文件夹的所有者和所属组均为ssh的用户
+    `config.vm.synced_folder &amp;quot;src/&amp;quot;, &amp;quot;/srv/website&amp;quot;, owner: &amp;quot;root&amp;quot;, group: &amp;quot;root&amp;quot;`
+* `type`,指定文件类型
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;4-创建自己的包&#34;&gt;4. 创建自己的包&lt;/h3&gt;
+
+&lt;p&gt;某些时候我们修改了&lt;code&gt;vagrant&lt;/code&gt;环境，需要重新创建给其他组员使用，这时候可以使用如下命令&lt;br /&gt;
+&lt;code&gt;vagrant package&lt;/code&gt; 创建新的box。基本操作：&lt;br /&gt;
+&lt;code&gt;vagrant package --output hicuenv.box&lt;/code&gt;&lt;br /&gt;
+将当前环境打包成镜像&lt;br /&gt;
+* &lt;code&gt;--output NAME&lt;/code&gt; 指定打包的名字。如果没有该选项，则默认情况下会直接打包成&lt;code&gt;package.box&lt;/code&gt;。&lt;br /&gt;
+* &lt;code&gt;--vagrantfile FILE&lt;/code&gt;将vagrantfile打包至box，下次启动将会随box一起启动&lt;/p&gt;
+
+&lt;h3 id=&#34;5-启动事项&#34;&gt;5. 启动事项&lt;/h3&gt;
+
+&lt;p&gt;有时候环境配置好了之后，我们可能初始化项目会执行一些特定的操作。一般在linux上，我们会写在&lt;code&gt;rc.local&lt;/code&gt;中，但是有些时候，我们可能会有些特定的操作。这时候就需要相关命令：
+&lt;code&gt;config.vm.provision&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;处理文件 &lt;code&gt;file&lt;/code&gt;&lt;/strong&gt;:将主机文件复制到虚拟机
+    &lt;code&gt;config.vm.provision &amp;quot;file&amp;quot;, source: &amp;quot;~/.gitconfig&amp;quot;, destination: &amp;quot;.gitconfig&amp;quot;&lt;/code&gt;
+    * &lt;code&gt;source&lt;/code&gt; 待上传的文件
+    * &lt;code&gt;destination&lt;/code&gt; 虚拟机文件路径&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;处理脚本 &lt;code&gt;shell&lt;/code&gt;&lt;/strong&gt;: 执行脚本任务&lt;br /&gt;
+    &lt;code&gt;config.vm.provision &amp;quot;shell&amp;quot;, inline: &amp;quot;echo Hello, World&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;inline&lt;/code&gt;，使用内联&lt;code&gt;shell&lt;/code&gt;,通常为&lt;code&gt;shell&lt;/code&gt;语句&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;path&lt;/code&gt;, 按路径加在脚本
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//加载主机当前目录脚本
+ config.vm.provision &amp;quot;shell&amp;quot;, path: &amp;quot;script.sh&amp;quot;
+
+//加载其他主机脚本
+ config.vm.provision &amp;quot;shell&amp;quot;, path: &amp;quot;https://example.com/provisioner.sh&amp;quot;
+
+//加载虚拟机内部脚本
+  config.vm.provision &amp;quot;shell&amp;quot;,inline: &amp;quot;/bin/sh /path/to/the/script/already/on/the/guest.sh&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;脚本参数
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  config.vm.provision &amp;quot;shell&amp;quot; do |s|
+    s.inline = &amp;quot;echo $1&amp;quot;
+    s.args   = &amp;quot;&#39;hello, world!&#39;&amp;quot;
+  end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;附录：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;参数说明:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$# 传给脚本的参数个数
+$0 脚本本身的名字
+$1 传递给该shell脚本的第一个参数
+$2 传递给该shell脚本的第二个参数
+$@ 传给脚本的所有参数的列表
+$* 以一个单字符串显示所有向脚本传递的参数，与位置变量不同，参数可超过9个
+$$ 脚本运行的当前进程ID号
+$? 显示最后命令的退出状态，0表示没有错误，其他表示有错误
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;某些时候windows下cygwin会报错，原因是因为windows环境支持不是很好，需要另行指定：
+&lt;code&gt;export VAGRANT_DETECTED_OS=cygwin&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;公共镜像站地址:&lt;a href=&#34;http://www.vagrantbox.es/&#34;&gt;链接地址&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>TLPI学习笔记--文件io(四)--文件描述符</title>
+      <link>http://www.yuzhan.me/post/2015-09-19-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E5%9B%9B%29--%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/</link>
+      <pubDate>Sat, 19 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-09-19-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E5%9B%9B%29--%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/</guid>
+      <description>
+
+&lt;h1 id=&#34;1-文件描述符与打开文件&#34;&gt;1. 文件描述符与打开文件&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;进程级的文件描述符表&lt;/li&gt;
+&lt;li&gt;系统级打开文件表&lt;/li&gt;
+&lt;li&gt;文件系统的i-node表&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;不同数据表-存储信息如下&#34;&gt;不同数据表,存储信息如下&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-进程级的文件描述符表-open-file-descriptor&#34;&gt;1. 进程级的文件描述符表(&lt;code&gt;open_ file descriptor&lt;/code&gt;)&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;控制文件描述符操作的一组标志(目前只定义了一个,即&lt;code&gt;close-on-exec&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;对打开文件句柄的引用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;2-系统级的打开文件表-open-file-table-并且将表中各条目成为打开的文件句柄-open-file-handle&#34;&gt;2. 系统级的打开文件表(&lt;code&gt;open file table&lt;/code&gt;),并且将表中各条目成为打开的文件句柄(&lt;code&gt;open file handle&lt;/code&gt;)&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;当前文件偏移量&lt;/li&gt;
+&lt;li&gt;打开文件时所使用的状态标志&lt;/li&gt;
+&lt;li&gt;文件访问模式&lt;/li&gt;
+&lt;li&gt;与信号驱动&lt;code&gt;IO&lt;/code&gt;相关的设置&lt;/li&gt;
+&lt;li&gt;对该文件&lt;code&gt;i-node&lt;/code&gt;对象的引用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;3-文件系统的-i-node-表&#34;&gt;3. 文件系统的&lt;code&gt;i-node&lt;/code&gt;表&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文件类型&lt;/li&gt;
+&lt;li&gt;指向该文件所持有的所的列表的指针&lt;/li&gt;
+&lt;li&gt;文件的各种属性,文件大小,时间戳等&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;文件描述符-打开的句柄和-i-node-之间的关系&#34;&gt;文件描述符,打开的句柄和&lt;code&gt;i-node&lt;/code&gt;之间的关系&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2015/09/fileio_20150919_1.png&#34; alt=&#34;文件描述符,打开的句柄和`i-node`之间的关系&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;两个不同的文件描述符,若指向同一打开的文件句柄,将共享同一文件偏移量&lt;/li&gt;
+&lt;li&gt;要获得和修改打开的文件标志,可以执行&lt;code&gt;fcntl()&lt;/code&gt;的&lt;code&gt;F_GETFL&lt;/code&gt;和&lt;code&gt;F_SETFL&lt;/code&gt;操作.&lt;/li&gt;
+&lt;li&gt;文件描述符标志(&lt;code&gt;close-on-exec&lt;/code&gt;)为进程和文件描述符私有.修改不会影响同一进程或不同进程中其他文件描述符.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;2-复制文件描述符&#34;&gt;2. 复制文件描述符&lt;/h1&gt;
+
+&lt;h2 id=&#34;相关函数&#34;&gt;相关函数&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-dup&#34;&gt;1. &lt;code&gt;dup()&lt;/code&gt;&lt;/h3&gt;
+
+&lt;h4 id=&#34;1-1-函数简介&#34;&gt;1.1 函数简介&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;dup()&lt;/code&gt;调用复制一个打开的文件描述符&lt;code&gt;oldfd&lt;/code&gt;,并返回一个新描述符,二者都指向同一打开的文件句柄.&lt;br /&gt;
+系统会保证新描述符一定是编号值最低的未用文件描述符.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+* @param int oldfd 需要复制的文件描述符
+* @return int success 新文件描述符
+*             error   -1
+*/
+int dup(int oldfd);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;2-dup2&#34;&gt;2. &lt;code&gt;dup2()&lt;/code&gt;&lt;/h3&gt;
+
+&lt;h4 id=&#34;2-1-函数简介&#34;&gt;2.1 函数简介&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;dup2()&lt;/code&gt;系统调用会为&lt;code&gt;oldfd&lt;/code&gt;参数指定新的文件描述符创建副本,其编号有&lt;code&gt;newfd&lt;/code&gt;参数指定&lt;br /&gt;
+如果&lt;code&gt;newfd&lt;/code&gt;参数所指定编号的文件描述符之前已经打开,那么&lt;code&gt;dup2()&lt;/code&gt;会将其先关闭&lt;br /&gt;
+&lt;code&gt;dup2()&lt;/code&gt;调用会默认忽略&lt;code&gt;newfd&lt;/code&gt;关闭期间出现的任何错误,因此,安全做法为显示调用&lt;code&gt;close()&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+* @param int oldfd 需要复制的文件描述符
+* @param int newfd 指定的新文件描述符
+* @return int success 新文件描述符
+*             error   -1
+*/
+int dup(int oldfd);
+
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>TLPI学习笔记--文件io(三)--原子操作与竞争条件,文件控制</title>
+      <link>http://www.yuzhan.me/post/2015-09-18-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%B8%89%29--%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%E4%B8%8E%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6,%E6%96%87%E4%BB%B6%E6%8E%A7%E5%88%B6/</link>
+      <pubDate>Fri, 18 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-09-18-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%B8%89%29--%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%E4%B8%8E%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6,%E6%96%87%E4%BB%B6%E6%8E%A7%E5%88%B6/</guid>
+      <description>
+
+&lt;h2 id=&#34;原子操作与竞争条件&#34;&gt;原子操作与竞争条件&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-原子操作&#34;&gt;1. 原子操作&lt;/h3&gt;
+
+&lt;p&gt;所有系统调用都是以原子操作方式执行的&lt;br /&gt;
+内核保证了某系统调用中的所有步骤会作为独立操作而一次性加以执行,其间不会为其他进程或线程中断&lt;/p&gt;
+
+&lt;h3 id=&#34;2-竞争状态&#34;&gt;2. 竞争状态&lt;/h3&gt;
+
+&lt;p&gt;操作共享资源的两个进程(或线程),其结果取决于一个无法预期的顺序,即这些进程获得CPU使用权的先后顺序&lt;/p&gt;
+
+&lt;h3 id=&#34;3-原子操作的必要性&#34;&gt;3. 原子操作的必要性&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;以独占方式创建一个文件&lt;/strong&gt;&lt;br /&gt;
+&lt;code&gt;O_EXCL&lt;/code&gt;与&lt;code&gt;O_CREAT&lt;/code&gt;作为&lt;code&gt;open()&lt;/code&gt;的标志位.如果要打开的文件已然存在,则&lt;code&gt;open()&lt;/code&gt;将返回一个错误&lt;br /&gt;
+这提供一种机制,保证进程是打开文件的创建者.对文件是否存在和创建文件属于同一原子操作.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;向文件尾部追加数据&lt;/strong&gt;&lt;br /&gt;
+多个进程同时向一个文件尾部添加数据,可能再次遇见竞争状态,因为执行的结果依赖于内核对两个进程的调度顺序&lt;br /&gt;
+要规避这一问题,需要将文件偏移量和数据写操作纳入同一原子操作.
+在打开文件时,&lt;code&gt;O_APPEND&lt;/code&gt;标志就可以保证这一点&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;文件控制操作&#34;&gt;文件控制操作&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;fcntl()&lt;/code&gt;系统调用对一个打开的文件描述副执行一系列控制操作&lt;/p&gt;
+
+&lt;h3 id=&#34;1-函数简介&#34;&gt;1. 函数简介&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;fcntl.h&amp;gt;
+
+/**
+*   @param int      fd       需要操作的文件描述符
+*   @param int      cmd      参数,支持各类操作
+*   @param          ...      内核依据cmd参数的值来确定该参数的数据类型
+*   @return int     success  依赖与cmd参数
+*                   error    -1
+*/
+
+int fcntl(int fd, int cmd, ...);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;2-fcntl-参数&#34;&gt;2. &lt;code&gt;fcntl&lt;/code&gt;参数&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;F_GETFL&lt;/td&gt;
+&lt;td&gt;获得文件访问模式或状态标志&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;F_SETFL&lt;/td&gt;
+&lt;td&gt;修改文件访问模式或状态标志&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;F_DUPFD&lt;/td&gt;
+&lt;td&gt;复制文件描述符&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;3-函数应用&#34;&gt;3. 函数应用&lt;/h3&gt;
+
+&lt;h4 id=&#34;3-1-针对一个打开的文件-获取或修改访问模式或状态标志&#34;&gt;3.1 针对一个打开的文件,获取或修改访问模式或状态标志&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;    int flags, accessMode;
+//  F_GETFL获取访问模式或状态标志
+    flags = fcntl(fd, F_GETFL);
+    if (flags == -1)
+        errExit(&amp;quot;fcntl&amp;quot;);
+//  F_SETFL修改访问模式或状态标志
+    flags |= O_APPEND;
+    if(fcntl(fd, F_SETFL, flags) == -1)
+        errExit(&amp;quot;fcntl&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;flags&lt;/code&gt; 为文件的访问模式或状态标志&lt;/p&gt;
+
+&lt;h5 id=&#34;3-1-1-参数-f-setfl-f-getfl&#34;&gt;3.1.1 参数 &lt;code&gt;F_SETFL&lt;/code&gt;, &lt;code&gt;F_GETFL&lt;/code&gt;&lt;/h5&gt;
+
+&lt;h5 id=&#34;3-1-2-用途&#34;&gt;3.1.2 用途:&lt;/h5&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;检查文件是否同步&lt;br /&gt;
+&lt;code&gt;flags &amp;amp; O_SYNC&lt;/code&gt;&lt;br /&gt;
+返回：&lt;code&gt;true&lt;/code&gt; or &lt;code&gt;false&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;检查文件访问模式&lt;br /&gt;
+&lt;code&gt;flags &amp;amp; O_ACCMODE&lt;/code&gt;&lt;br /&gt;
+返回: &lt;code&gt;O_WRONLY&lt;/code&gt;,&lt;code&gt;O_RDWD&lt;/code&gt;,&lt;code&gt;O_RDONLY&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;3-2-复制文件描述符&#34;&gt;3.2 复制文件描述符&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;newfd = fcntl(oldfd, F_DUPFD, startfd);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;3-1-参数-f-dupfd&#34;&gt;3.1 参数 &lt;code&gt;F_DUPFD&lt;/code&gt;&lt;/h5&gt;
+
+&lt;h5 id=&#34;3-2-说明&#34;&gt;3.2 说明&lt;/h5&gt;
+
+&lt;p&gt;该调用为&lt;code&gt;oldfd&lt;/code&gt;创建一个副本，且将使用大于等于&lt;code&gt;startfd&lt;/code&gt;的最小未用值作为描述符编号。&lt;br /&gt;
+该调用还能保证新描述符&lt;code&gt;startfd&lt;/code&gt;编号落在待定的区间范围。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>TLPI学习笔记--文件io(二)--文件偏移量</title>
+      <link>http://www.yuzhan.me/post/2015-09-17-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%BA%8C%29--%E6%96%87%E4%BB%B6%E5%81%8F%E7%A7%BB%E9%87%8F/</link>
+      <pubDate>Thu, 17 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-09-17-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%BA%8C%29--%E6%96%87%E4%BB%B6%E5%81%8F%E7%A7%BB%E9%87%8F/</guid>
+      <description>
+
+&lt;h2 id=&#34;1-文件偏移量&#34;&gt;1. 文件偏移量&lt;/h2&gt;
+
+&lt;p&gt;文件偏移量是指执行下一个&lt;code&gt;read()&lt;/code&gt;或&lt;code&gt;write()&lt;/code&gt;操作的文件起始位置，会相对于文件头部起始点的文件当前位置来表示。文件第一个字节的偏移量为0。&lt;/p&gt;
+
+&lt;h3 id=&#34;1-1-函数说明&#34;&gt;1.1 函数说明&lt;/h3&gt;
+
+&lt;p&gt;针对文件描述fd已打开的文件，&lt;code&gt;lseek()&lt;/code&gt;系统调用依照&lt;code&gt;offset&lt;/code&gt;和&lt;code&gt;wherece&lt;/code&gt;参数值调整该文件偏移量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;unistd.h&amp;gt;
+
+/**
+*   @param int          fd       需要调整偏移量的文件描述符
+*   @param off_t        offset   指定偏移多少字节
+*   @param int          wherece  指定按照哪个基点来解释offset参数：SEEK_SET, SEEK_CUR, SEEK_END
+*   @return off_t     success  新文件偏移量
+*                     error    -1
+*/
+
+off_t lseek(int fd, off_t offset, int wherece);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;1-2-参数说明&#34;&gt;1.2 参数说明&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;SEEK_SET&lt;/td&gt;
+&lt;td&gt;偏移量设置为从文件头部起始位置开始的offset个字节&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SEEK_CUR&lt;/td&gt;
+&lt;td&gt;当前偏移量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SEEK_END&lt;/td&gt;
+&lt;td&gt;偏移亮设置为起始于尾部的offset个字节&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;程序示例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lseek(fd, 0, SEEK_SET);     /* 文件开始 */
+lseek(fd, 0, SEEK_END);     /* 文件结束 */
+lseek(fd, -1, SEEK_END);    /* 文件最后一个字节 */
+lseek(fd, -10, SEEK_CUR);   /* 按照当前偏移量，向前偏移10个字节 */
+lseek(fd, 10000, SEEK_END); /* 文件最后的10001个字节 */
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;1-3-文件空洞&#34;&gt;1.3 文件空洞&lt;/h3&gt;
+
+&lt;p&gt;从文件结尾到写入新数据间的这段空间称为文件空洞。文件空洞中存在字节，读取空洞将返回以0（空字节）填充的缓冲区&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>TLPI学习笔记--文件io(一)--基本操作</title>
+      <link>http://www.yuzhan.me/post/2015-09-16-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%B8%80%29--%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-09-16-TLPI%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0--%E6%96%87%E4%BB%B6io%28%E4%B8%80%29--%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</guid>
+      <description>
+
+&lt;h1 id=&#34;概述&#34;&gt;概述&lt;/h1&gt;
+
+&lt;p&gt;所有执行IO操作的系统调用都以文件描述符，一个非负整数（通常是小整数），来指代打开的文件。&lt;/p&gt;
+
+&lt;h3 id=&#34;文件描述符&#34;&gt;文件描述符&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;文件描述符&lt;/th&gt;
+&lt;th&gt;用途&lt;/th&gt;
+&lt;th&gt;POSIX名称&lt;/th&gt;
+&lt;th&gt;stdio流&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;标准输入&lt;/td&gt;
+&lt;td&gt;STDIN_FILENO&lt;/td&gt;
+&lt;td&gt;stdin&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;标准输出&lt;/td&gt;
+&lt;td&gt;STDOUT_FILENO&lt;/td&gt;
+&lt;td&gt;stdout&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;标准错误&lt;/td&gt;
+&lt;td&gt;STDERR_FILENO&lt;/td&gt;
+&lt;td&gt;stderr&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&#34;基本操作&#34;&gt;基本操作&lt;/h1&gt;
+
+&lt;h2 id=&#34;1-打开一个文件-open&#34;&gt;1. 打开一个文件&lt;code&gt;open()&lt;/code&gt;&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-1-函数简介&#34;&gt;1.1 函数简介&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;open()&lt;/code&gt;调用既能打开存在的文件，也能创建并打开一个新文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;sys/stat.h&amp;gt;
+#include &amp;lt;fcntl.h&amp;gt;
+
+/**
+*   @param const char * pathname 打开的文件名称，如果是一个符号链接，会对其进行解引用
+*   @param int          flags    位掩码，用于指定文件访问模式
+*   @param mode_t       mode     位掩码，用于指定新建文件的访问权限
+*   @return int     success  文件描述符
+*                   error    -1
+*/
+
+int open(const char * pathname, int flags, ... /* mode_t mode */);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;1-2-文件访问模式&#34;&gt;1.2 文件访问模式&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;访问模式&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;O_RDONLY&lt;/td&gt;
+&lt;td&gt;以只读方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_WRONLY&lt;/td&gt;
+&lt;td&gt;以只写方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_RDWR&lt;/td&gt;
+&lt;td&gt;以读写方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;1-3-open-调用中的-flags-参数&#34;&gt;1.3 &lt;code&gt;open()&lt;/code&gt;调用中的&lt;code&gt;flags&lt;/code&gt;参数&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;标志&lt;/th&gt;
+&lt;th&gt;用途&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;O_RDONLY&lt;/td&gt;
+&lt;td&gt;以只读方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_WRONLY&lt;/td&gt;
+&lt;td&gt;以只写方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_RDWR&lt;/td&gt;
+&lt;td&gt;以读写方式打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&amp;mdash;&amp;mdash;&amp;mdash;&lt;/td&gt;
+&lt;td&gt;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_CREAT&lt;/td&gt;
+&lt;td&gt;若文件不存在则创建之&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_EXCL&lt;/td&gt;
+&lt;td&gt;结合O_CREAT参数使用，专门用于创建文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_TRUNC&lt;/td&gt;
+&lt;td&gt;截断已有文件，使其长度为0&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_APPEND&lt;/td&gt;
+&lt;td&gt;总在文件尾部追加数据&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_ASYNC&lt;/td&gt;
+&lt;td&gt;当IO操作可行时，产生信号（signal）通知进程&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_DSYNC&lt;/td&gt;
+&lt;td&gt;提供同步的IO数据完整性&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_NONBLOCK&lt;/td&gt;
+&lt;td&gt;以非阻塞方式打开&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;O_SYNC&lt;/td&gt;
+&lt;td&gt;以同步方式写入文件&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;1-4-open-函数的错误信息&#34;&gt;1.4 &lt;code&gt;open()&lt;/code&gt;函数的错误信息&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;EACCESS&lt;/code&gt;
+无法访问文件，目录权限限制，文件不存在且无法创建该文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;EISDIR&lt;/code&gt;
+所指定文件属于目录，调用者试图打开文件进行读写&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;EMFILE&lt;/code&gt;
+进程已打开的文件描述符数量达到了进程资源限制所设定的上限&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ENFILE&lt;/code&gt;
+文件打开的数量已经达到系统允许的上线&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ENOENT&lt;/code&gt;
+要么文件不存在且未指定&lt;code&gt;O_CREAT&lt;/code&gt;,要么指定了&lt;code&gt;O_CREAT&lt;/code&gt;,但&lt;code&gt;pathname&lt;/code&gt;参数所指定路径的目录之一不存在，或&lt;code&gt;pathname&lt;/code&gt;参数为空链接&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;EROFS&lt;/code&gt;
+所指定的文件属于只读文件系统，而调用者企图以写的方式打开文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ETXTBSY&lt;/code&gt;
+所指定的文件为可执行文件，且正在运行。系统不允许修改正在运行的程序&lt;/p&gt;
+
+&lt;h2 id=&#34;2-creat-系统调用&#34;&gt;2. &lt;code&gt;creat()&lt;/code&gt;系统调用&lt;/h2&gt;
+
+&lt;h3 id=&#34;2-1-函数简介&#34;&gt;2.1 函数简介&lt;/h3&gt;
+
+&lt;p&gt;早期UNIX实现中，&lt;code&gt;open()&lt;/code&gt;只有两个参数，无法创建新文件，而使用&lt;code&gt;creat()&lt;/code&gt;系统调用来创建并打开一个新文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;fcntl.h&amp;gt;
+
+/**
+*   @param const char * pathname 创建并打开一个文件，若文件已存在，则打开文件，并清空文件内容，将长度清0
+*   @param mode_t       mode     位掩码，用于指定新建文件的访问权限
+*   @return int     success  文件描述符
+*                   error    -1
+*/
+
+int creat(const char * pathname, mode_t mode);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;3-读取文件内容-read&#34;&gt;3. 读取文件内容：&lt;code&gt;read()&lt;/code&gt;&lt;/h2&gt;
+
+&lt;h3 id=&#34;3-1-函数简介&#34;&gt;3.1 函数简介&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;read()&lt;/code&gt;系统调用从文件描述符&lt;code&gt;fd&lt;/code&gt;所指代的打开的文件中读取数据&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;unistd.h&amp;gt;
+
+/**
+*   @param  int             fd       打开的文件的文件描述符
+*   @param  void *          buffer   用来存放输入数据的内存缓冲地址，缓冲区至少有count个字节
+*   @param  size_t          count    指定最多能够读取的字节数
+*   @return ssize_t     success  返回实际读取的字节数，如果遇到文件结束（EOF）则返回0
+*                       error    -1
+*/
+
+ssize_t read(int fd, void * buffer, size_t count);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;3-2-注意事项&#34;&gt;3.2 注意事项&lt;/h3&gt;
+
+&lt;p&gt;由于表示字符串终止的空字符需要一个字节的内存，么所以缓冲区的大小至少比预读取的最大字符串长读多出1个字节&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;char buffer[MAX_READ + 1];
+ssize_t numRead;
+
+numRead = read(STDIN_FILENO, buffer, MAX_READ);
+if (numRead == -1)
+    errExit(&amp;quot;read&amp;quot;);
+    
+buffer[numRead] = &#39;\0&#39;;
+printf(&amp;quot;The input data was: %s\n&amp;quot;, buffer);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;4-数据写入文件-write&#34;&gt;4. 数据写入文件:&lt;code&gt;write()&lt;/code&gt;&lt;/h2&gt;
+
+&lt;h3 id=&#34;4-1-函数简介&#34;&gt;4.1 函数简介&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;write()&lt;/code&gt;系统调用将数据写入一个已经打开的文件中&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;unistd.h&amp;gt;
+
+/**
+*   @param  int             fd       要写入数据的文件描述符
+*   @param  void *          buffer   要写入数据的内存缓冲地址
+*   @param  size_t          count    指定从buffer中
+*   @return ssize_t     success  返回实际写入的字节数，可能小于count，称为部分写。
+*                       error    -1
+*/
+
+ssize_t write(int fd, void * buffer, size_t count);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;5-关闭文件-close&#34;&gt;5. 关闭文件：&lt;code&gt;close()&lt;/code&gt;&lt;/h2&gt;
+
+&lt;h3 id=&#34;5-1-函数简介&#34;&gt;5.1 函数简介&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;close()&lt;/code&gt;系统调用关闭一个打开的文件描述符，并将其释放回调用进程。供该进程继续使用。当一个进程终止时，将自动关闭其已打开的所有文件描述符。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;unistd.h&amp;gt;
+
+/**
+*   @param  int         fd       需要关闭的文件描述符    
+*   @return ssize_t     success  0
+*                       error    -1
+*/
+
+int close(int fd);
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>依赖注入和控制反转</title>
+      <link>http://www.yuzhan.me/post/2015-08-14-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/</link>
+      <pubDate>Fri, 14 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-08-14-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/</guid>
+      <description>
+
+&lt;h2 id=&#34;概念&#34;&gt;概念&lt;/h2&gt;
+
+&lt;h3 id=&#34;依赖注入-dependency-injection-di&#34;&gt;依赖注入(&lt;code&gt;Dependency Injection,DI&lt;/code&gt;)&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;高层类应该依赖底层基础设施来提供必要的服务&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;控制反转-inversion-ofcontrol-ioc&#34;&gt;控制反转(&lt;code&gt;Inversion ofControl,IoC&lt;/code&gt;)&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;控制反转即IoC (Inversion of Control)，它把传统上由程序代码直接操控的对象的调用权交给容器，通过容器来实现对象组件的装配和管理。所谓的“控制反转”概念就是对组件对象控制权的转移，从程序代码本身转移到了外部容器。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;说明&#34;&gt;说明&lt;/h2&gt;
+
+&lt;h3 id=&#34;依赖注入&#34;&gt;依赖注入&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;先假设一个类&lt;code&gt;Foo&lt;/code&gt;中一个属性，依赖一个对象的实例&lt;code&gt;Bar&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Foo
+{
+   private $_bar;
+   public function __construct() {
+     $this-&amp;gt;_bar = new Bar();
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过&lt;code&gt;new Bar()&lt;/code&gt;,将对象的实例赋值给成员属性&lt;code&gt;$bar&lt;/code&gt;解决了问题&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;然而，当我们的需求变的复杂，对于不同的参数，或者当&lt;code&gt;Bar&lt;/code&gt;类有多种驱动实现如何处理。结合工厂模式，我们很快想到&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Foo
+{
+   private $_bar;
+   public function __construct($driver,$params) {
+     $this-&amp;gt;_bar = BarFactory::getInstance($driver,$params);
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;工厂函数&lt;code&gt;BarFactory::getInstacne()&lt;/code&gt;,包含两个参数，&lt;code&gt;$driver&lt;/code&gt;和&lt;code&gt;$params&lt;/code&gt;。&lt;code&gt;$driver&lt;/code&gt;表示&lt;code&gt;Bar&lt;/code&gt;所使用的驱动，而&lt;code&gt;$params&lt;/code&gt;则表示参数。借此，我们可以满足需求的变动。之后新增新的驱动，也能很好的添加&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;事情貌似很完美了。可是，我们仔细想想会发现，如果注入类的类多了，或者，&lt;code&gt;BarFactory&lt;/code&gt;变动了。我们就得相应的修改&lt;code&gt;Foo&lt;/code&gt;的&lt;code&gt;__construct&lt;/code&gt;。那么我们怎么解决这类问题呢。此时，我们引入依赖注入(&lt;code&gt;Dependency Injection&lt;/code&gt;)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Foo
+{
+   private $_bar;
+   public function __construct($bar) {
+     $this-&amp;gt;_bar = $bar;
+   }
+}
+$bar = BarFactory::getInstance($driver,$params);
+$foo = new Foo($bar);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样一来，Foo类与Bar类解除耦合了。Foo类中已经完全没有工厂方法或者Bar类的身影。我们通过外部实例化&lt;code&gt;Bar&lt;/code&gt;类，然后传入&lt;code&gt;Foo&lt;/code&gt;构建新的&lt;code&gt;Foo&lt;/code&gt;实例。
+这就叫&lt;strong&gt;依赖注入&lt;/strong&gt;，实现不是在代码内部创建依赖关系，而是让其作为一个参数传递，这使得我们的程序更容易维护，降低程序代码的耦合度，实现一种松耦合。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;控制反转&#34;&gt;控制反转&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;接上面的类，我们解决了耦合的问题。但是随着一个类越来越复杂，依赖的类变多，如何解决这个问题呢。&lt;br /&gt;
+我们可以传入多个类&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Foo
+{
+   private $_bar;
+   private $_pin;
+       
+   public function __construct($bar,$pin) {
+     $this-&amp;gt;_bar = $bar;
+     $this-&amp;gt;_pin = $pin;
+   }
+}
+$bar = BarFactory::getInstance($driver,$params);
+$pin = PinFactory::getInstance($pin);
+$foo = new Foo($bar,$pin);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果有更多的类的一来，那么&lt;code&gt;construct&lt;/code&gt;的参数列表将会很长。我们维护将变得十分困难。那么我们如何处理这个问题呢。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;我们想，如果有个容器能够专门管理这些类，需要调用的时候取出来就行了。这里我们提出一个概念&lt;strong&gt;容器&lt;/strong&gt;，又叫做&lt;strong&gt;IoC容器&lt;/strong&gt;、&lt;strong&gt;DI容器&lt;/strong&gt;。
+先看看如下代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Foo
+{
+   private $_di;
+   public function __construct(Di $di) {
+     $this-&amp;gt;_di = $di;
+   }
+       
+   public function userBar(){
+     $this-&amp;gt;_di-&amp;gt;get(&#39;bar&#39;)-&amp;gt;doSomething();
+   }
+       
+   public function userPin(){
+     $this-&amp;gt;_di-&amp;gt;get(&#39;pin&#39;)-&amp;gt;doSomething();
+   }
+}
+$di = new Di();
+    
+$di-&amp;gt;set(&#39;bar&#39;,BarFactory::getInstance($driver,$params));
+$di-&amp;gt;set(&#39;pin&#39;,PinFactory::getInstance($pin));
+    
+$foo = new Foo($di);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里，我们通过&lt;code&gt;$di&lt;/code&gt;将可能会遇到各类实例注入到容器中。通过&lt;code&gt;$di-&amp;gt;set&lt;/code&gt;方法将需要的实例注册到容器。之后我们只用在需要的位置调用&lt;code&gt;$di-&amp;gt;get&lt;/code&gt;就能得到各类实例了。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;问题来了，网站的项目十分庞大，将这么多类注入到容器中，消耗过多内存怎么办。经过思考，我们可以把重要的类的实例放入容器。对于部分只在调用时才需要的容器，可以借助PHP的回调函数解决。代码如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+$di = new Di();
+    
+$di-&amp;gt;set(&#39;bar&#39;,function(){
+  return new Bar();
+});
+$di-&amp;gt;set(&#39;pin&#39;,function(){
+  return new Pin();
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;一切似乎很完美。等等，如果很多重要的类放入容器，依然会消耗一部分内存。此时，我们可以直接传入类名，然后等到使用的时候实例化。代码实现如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+$di = new Di();
+$di-&amp;gt;set(&#39;bar&#39;,&#39;\Application\Lib\Bar&#39;);
+$di-&amp;gt;set(&#39;pin&#39;,&#39;\Application\Lib\Pin&#39;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;如果类的命名空间很长，那么可以设置一些别名，来简化导入。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+//假设存在一个别名处理类DiAlias，已经注入到容器di中。
+//并且，这个别名处理存在一个方法setAlias，将别名与类做映射
+$di-&amp;gt;get(&#39;DiAlias&#39;)-&amp;gt;setAlias(&#39;\Application\Lib\Bar&#39;,&#39;Bar&#39;);
+//如果有多个别名，我们可以定义一些另外的方法。
+$alias = [
+    &amp;quot;Bar&amp;quot; =&amp;gt; &amp;quot;\Application\Lib\Bar&amp;quot;,
+    &amp;quot;Pin&amp;quot; =&amp;gt; &amp;quot;\Application\Lib\Pin&amp;quot;,
+];
+//此时可以读取这个配置
+$di-&amp;gt;get(&#39;DiAlias&#39;)-&amp;gt;setAllAlias($alias);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;说了这么多&lt;code&gt;di&lt;/code&gt;容器，那么到底&lt;code&gt;di&lt;/code&gt;容器的&lt;code&gt;set&lt;/code&gt;和&lt;code&gt;get&lt;/code&gt;是怎样实现的呢。下面给出简单的实现&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Di
+{
+   private $_ins;
+       
+   public function set($name,$instance)
+    {
+       //设置实例
+       $this-&amp;gt;_ins[$name] = $instance;
+    }
+        
+    public function get($name)
+    {
+       //判断实例是否存在
+       if (!isset($this-&amp;gt;_ins[$name])) {
+           throw new Exception(&amp;quot;instance not found&amp;quot;);
+       }
+           
+       $instance = $this-&amp;gt;_ins[$name];
+       //如果为闭包，则直接调用闭包函数
+       if ($instance instanceof Closure) {
+           return call_user_func($instance);
+       } else {
+           return new $instance();
+       }
+    }
+ }
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;接下来，需求更复杂了。如果我们使用的&lt;code&gt;Bar&lt;/code&gt;类依赖另外一个类&lt;code&gt;Page&lt;/code&gt;的实现。上面的方法如何解决。类似如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Bar
+{
+    public function __construct(Page $page) {}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;经过思考，我们想到了PHP的发射。通过反射机制来获取依赖关系&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Di
+{
+    private $_ins;
+    
+   public function set($name, $instance)
+   {
+       //设置实例
+       $this-&amp;gt;_ins[$name] = $instance;
+   }
+       
+   public function get($name)
+   {
+       //判断实例是否存在
+       if (!isset($this-&amp;gt;_ins[$name])) {
+           throw new Exception(&amp;quot;instance not found&amp;quot;);
+       }
+    
+       $instance = $this-&amp;gt;_ins[$name];
+       //如果为闭包，则直接调用闭包函数
+       if ($instance instanceof Closure) {
+           return call_user_func($instance);
+       } else {
+           //如果不为闭包，直接建立依赖关系实例化
+           $object = $this-&amp;gt;build($instance);
+           return $object;
+       }
+   }
+    
+    //建立依赖关系
+    protected function build($instance)
+    {
+        //获取依赖关系
+        list ($reflection, $dependencies) = $this-&amp;gt;getDependencies($instance);
+    
+        //如果依赖不为空,根据参数实例化
+        if (!empty($dependencies)) {
+            return $reflection-&amp;gt;newInstanceArgs($dependencies);
+        } else {
+            //如果依赖不为空，则直接实例化参数
+            $object = $reflection-&amp;gt;newInstanceArgs();
+            return $object;
+        }
+    }
+    
+    //获取实例的依赖关系，方便实例化类
+    protected function getDependencies($instance)
+    {
+        $dependencies = [];
+//        实例化反射类
+        $reflection = new ReflectionClass($instance);
+    
+//        获取初始化函数，用于检测是否包含依赖注入
+        $constructor = $reflection-&amp;gt;getConstructor();
+    
+        if ($constructor !== null) {
+//            获取初始化函数类名，判断是否存在依赖关系
+            foreach ($constructor-&amp;gt;getParameters() as $param) {
+                $c = $param-&amp;gt;getClass();
+                $dependencies[] = $c-&amp;gt;getName();
+            }
+        }
+        return array($reflection,$dependencies);
+    }
+    
+    //解决依赖关系
+    protected function resolveDependencies($dependencies)
+    {
+        foreach ($dependencies as $index =&amp;gt; $dependency) {
+            $dependencies[$index] = $this-&amp;gt;get($dependency);
+        }
+        return $dependencies;
+    }
+    
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;虽然还有些地方没有完善。例如类的参数如何处理，添加依赖注入的时候，能够添加新的别名。添加依赖注入如何添加参数，单例等等。这些都还没细说。这里只是对依赖注入和&lt;code&gt;IoC&lt;/code&gt;容器做一个大概说明。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;现在的框架，不搞个&lt;code&gt;DI&lt;/code&gt;，仿佛就落伍了。当然，这自然有许多好处，比如类更加容易调用和控制。类与类之间也是松耦合的。全局大部分东西可以拆开重新替换。确实方便了很多。至于缺点，使用反射机制对性能造成一定的影响。代码对于初学者来说，理解难度过大等。总之，任何东西，适合自己的项目才是最好的。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>composer使用教程</title>
+      <link>http://www.yuzhan.me/post/2015-08-13-composer%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</link>
+      <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-08-13-composer%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</guid>
+      <description>
+
+&lt;h1 id=&#34;概念&#34;&gt;概念&lt;/h1&gt;
+
+&lt;p&gt;对于现代语言而言，包管理器基本上是标配。Java有Maven，Python有pip，Ruby有gem，Nodejs有npm。PHP的则是&lt;a href=&#34;http://pear.php.net/&#34;&gt;PEAR&lt;/a&gt;，不过PEAR坑不少
+。
+现在，我们有了&lt;a href=&#34;http://getcomposer.org/&#34;&gt;composer&lt;/a&gt;,PHP依赖管理的利器&lt;/p&gt;
+
+&lt;h1 id=&#34;安装composer&#34;&gt;安装Composer&lt;/h1&gt;
+
+&lt;p&gt;&lt;code&gt;$ curl -sS https://getcomposer.org/installer | php&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Windows下直接下载安装文件&lt;a href=&#34;https://getcomposer.org/Composer-Setup.exe&#34;&gt;Composer-Setup.exe&lt;/a&gt;安装&lt;/p&gt;
+
+&lt;h1 id=&#34;声明依赖&#34;&gt;声明依赖&lt;/h1&gt;
+
+&lt;p&gt;在项目目录下创建一个&lt;code&gt;composer.json&lt;/code&gt;文件，指明依赖，比如，你的项目依赖 &lt;a href=&#34;https://github.com/Seldaek/monolog&#34;&gt;monolog&lt;/a&gt;：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;require&amp;quot;: {
+    &amp;quot;monolog/monolog&amp;quot;: &amp;quot;1.2.*&amp;quot;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;安装依赖&#34;&gt;安装依赖&lt;/h1&gt;
+
+&lt;p&gt;安装依赖非常简单，只需在项目目录下运行：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;comoposer installer
+//如果没有全局安装的话，则运行：
+php composer.phar install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;自动加载&#34;&gt;自动加载&lt;/h1&gt;
+
+&lt;p&gt;Composer提供了自动加载的特性，只需在你的代码的初始化部分中加入下面一行：&lt;br /&gt;
+&lt;code&gt;require  &#39;vendor/autoload.php&#39;;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;简要文档&#34;&gt;简要文档&lt;/h1&gt;
+
+&lt;h3 id=&#34;关于-require-key&#34;&gt;关于&lt;code&gt;require&lt;/code&gt;KEY&lt;/h3&gt;
+
+&lt;p&gt;第一件事情（并且往往只需要做这一件事），你需要在 &lt;code&gt;composer.json&lt;/code&gt; 文件中指定 &lt;code&gt;require&lt;/code&gt; key 的值。你只需要简单的告诉 Composer 你的项目需要依赖哪些包。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;require&amp;quot;: {
+        &amp;quot;monolog/monolog&amp;quot;: &amp;quot;1.0.*&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;你可以看到， &lt;code&gt;require&lt;/code&gt; 需要一个 &lt;strong&gt;包名称&lt;/strong&gt; （例如 &lt;code&gt;monolog/monolog&lt;/code&gt;） 映射到 &lt;strong&gt;包版本&lt;/strong&gt; （例如 &lt;code&gt;1.0.*&lt;/code&gt;） 的对象。&lt;/p&gt;
+
+&lt;h3 id=&#34;包名称&#34;&gt;包名称&lt;/h3&gt;
+
+&lt;p&gt;包名称由供应商名称和其项目名称构成。如&lt;code&gt;monolog/monolog&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;包版本&#34;&gt;包版本&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2015/08/composer_01.png&#34; alt=&#34;包版本&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;下一个重要版本-波浪号运算符&#34;&gt;下一个重要版本（波浪号运算符）&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;~&lt;/code&gt; 最好用例子来解释： &lt;code&gt;~1.2&lt;/code&gt; 相当于 &lt;code&gt;&amp;gt;=1.2,&amp;lt;2.0&lt;/code&gt;，而 &lt;code&gt;~1.2.3&lt;/code&gt; 相当于 &lt;code&gt;&amp;gt;=1.2.3,&amp;lt;1.3&lt;/code&gt;。正如你所看到的这对于遵循 &lt;a href=&#34;http://semver.org/lang/zh-CN/&#34;&gt;语义化版本号&lt;/a&gt; 的项目最有用。&lt;/p&gt;
+
+&lt;h3 id=&#34;稳定性&#34;&gt;稳定性&lt;/h3&gt;
+
+&lt;p&gt;默认情况下只有稳定的发行版才会被考虑在内。如果你也想获得 RC、beta、alpha 或 dev 版本，你可以使用 &lt;a href=&#34;http://docs.phpcomposer.com/04-schema.html#Package-links&#34;&gt;稳定标志&lt;/a&gt;。你可以对所有的包做 &lt;a href=&#34;http://docs.phpcomposer.com/04-schema.html#minimum-stability&#34;&gt;最小稳定性&lt;/a&gt; 设置，而不是每个依赖逐一设置。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装依赖包&#34;&gt;安装依赖包&lt;/h3&gt;
+
+&lt;p&gt;获取定义的依赖到你的本地项目，只需要调用 &lt;code&gt;composer.phar&lt;/code&gt; 运行 &lt;code&gt;install&lt;/code&gt; 命令。&lt;br /&gt;
+&lt;code&gt;php composer.phar install&lt;/code&gt;&lt;br /&gt;
+接着前面的例子，这将会找到 &lt;code&gt;monolog/monolog&lt;/code&gt; 的最新版本，并将它下载到 &lt;code&gt;vendor&lt;/code&gt; 目录。 这是一个惯例把第三方的代码到一个指定的目录 &lt;code&gt;vendor&lt;/code&gt;。如果是 monolog 将会创建 &lt;code&gt;vendor/monolog/monolog&lt;/code&gt; 目录。
+另一件事是 &lt;code&gt;install&lt;/code&gt; 命令将创建一个 &lt;code&gt;composer.lock&lt;/code&gt; 文件到你项目的根目录中。&lt;/p&gt;
+
+&lt;h3 id=&#34;composer-lock-锁文件&#34;&gt;&lt;code&gt;composer.lock&lt;/code&gt; - 锁文件&lt;/h3&gt;
+
+&lt;p&gt;在安装依赖后，Composer 将把安装时确切的版本号列表写入 &lt;code&gt;composer.lock&lt;/code&gt; 文件。这将锁定改项目的特定版本。&lt;br /&gt;
+如果你的依赖更新了新的版本，你将不会获得任何更新。此时要更新你的依赖版本请使用 &lt;code&gt;update&lt;/code&gt; 命令。这将获取最新匹配的版本（根据你的 &lt;code&gt;composer.json&lt;/code&gt; 文件）并将新版本更新进锁文件。&lt;br /&gt;
+&lt;code&gt;php composer.phar update&lt;/code&gt;&lt;br /&gt;
+如果只想安装或更新一个依赖，你可以白名单它们：&lt;br /&gt;
+&lt;code&gt;php composer.phar update monolog/monolog [...]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;packagist&#34;&gt;Packagist&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://packagist.org/&#34;&gt;packagist&lt;/a&gt; 是 Composer 的主要资源库。 一个 Composer 的库基本上是一个包的源：记录了可以得到包的地方。Packagist 的目标是成为大家使用库资源的中央存储平台。这意味着你可以 &lt;code&gt;require&lt;/code&gt; 那里的任何包。&lt;/p&gt;
+
+&lt;h3 id=&#34;自动加载-1&#34;&gt;自动加载&lt;/h3&gt;
+
+&lt;p&gt;对于库的自动加载信息，Composer 生成了一个 &lt;code&gt;vendor/autoload.php&lt;/code&gt; 文件。你可以简单的引入这个文件，你会得到一个免费的自动加载支持。&lt;br /&gt;
+&lt;code&gt;require &#39;vendor/autoload.php&#39;;&lt;/code&gt;&lt;br /&gt;
+这使得你可以很容易的使用第三方代码。例如：如果你的项目依赖 monolog，你就可以像这样开始使用这个类库，并且他们将被自动加载。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$log = new Monolog\Logger(&#39;name&#39;);
+$log-&amp;gt;pushHandler(new Monolog\Handler\StreamHandler(&#39;app.log&#39;, Monolog\Logger::WARNING));
+
+$log-&amp;gt;addWarning(&#39;Foo&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;详细文档&#34;&gt;详细文档&lt;/h3&gt;
+
+&lt;p&gt;更多详细文档,&lt;a href=&#34;http://docs.phpcomposer.com/&#34;&gt;请查看&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;常用第三方库&#34;&gt;常用第三方库&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;日志管理：&lt;code&gt;monolog/monolog&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;时间管理：&lt;code&gt;nesbot/carbon&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;ORM: &lt;code&gt;doctrine/orm&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;图片处理：&lt;code&gt;intervention/image&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;HTTP处理: &lt;code&gt;guzzle/guzzle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;缓存处理：&lt;code&gt;doctrine/cache&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;数据库管理：&lt;code&gt;robmorgan/phinx&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;文件处理系统： &lt;code&gt;symfony/filesystem&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>微信朋友圈权限设计</title>
+      <link>http://www.yuzhan.me/post/2015-01-06-%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88%E6%9D%83%E9%99%90%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Tue, 06 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2015-01-06-%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88%E6%9D%83%E9%99%90%E8%AE%BE%E8%AE%A1/</guid>
+      <description>
+
+&lt;h2 id=&#34;微信朋友圈权限如下&#34;&gt;微信朋友圈权限如下&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;相互关注的好友才能浏览&lt;/li&gt;
+&lt;li&gt;基于第一条，附加不允许别人看我的消息&lt;/li&gt;
+&lt;li&gt;基于第一条，附加不看别人的消息&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;表初步设计&#34;&gt;表初步设计：&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;用户表 &lt;code&gt;user: uid(用户id)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;关系表
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;relation: uid(用户id)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;starid(被关注者id，关联用户表)&lt;/code&gt;&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;is_both_star(是否相互关注)&lt;/code&gt;&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;is_allow(是否允许别人看我的消息)&lt;/code&gt;&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;is_show(是否查看别人的消息)&lt;/code&gt;
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;查询条件解析，相互关注，自己需要看别人的信息，同时别人允许我看&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SELECT starid FROM relation WHERE uid=$uid AND is_both_star=1 AND is_show=1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查询出所有被关注者id，过滤别人允许我访问的权限&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SELECT starid FROM relation WHERE uid in ($collection) AND starid=$uid AND is_both_star =1 AND is_allow=1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;得出来的结果就是所有能够访问的人&lt;/p&gt;
+
+&lt;h2 id=&#34;表优化&#34;&gt;表优化：&lt;/h2&gt;
+
+&lt;p&gt;既然存在相互关注这一个只算，那么，打算再新增一个字段，is_permit,表示是否有权限查看别人，那么查询的时候就会简单很多&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SELECT starid FROM relation WHERE uid=$uid AND is_both_star=1 AND is_show=1 AND is_oermit=1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个表可以放入nosql,或者将查询的结果放入缓存，增加读写速度
+最后，再遍历朋友圈信息的时候，只用查询存在这个权限表的人，不存在，则不显示&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>php设定多维数组的值</title>
+      <link>http://www.yuzhan.me/post/2014-03-27-php%E8%AE%BE%E5%AE%9A%E5%A4%9A%E7%BB%B4%E6%95%B0%E7%BB%84%E7%9A%84%E5%80%BC/</link>
+      <pubDate>Thu, 27 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-03-27-php%E8%AE%BE%E5%AE%9A%E5%A4%9A%E7%BB%B4%E6%95%B0%E7%BB%84%E7%9A%84%E5%80%BC/</guid>
+      <description>&lt;p&gt;今天同事问了我一个问题，我思前想后，将其改变了一下，于是就有了下面这题：&lt;/p&gt;
+
+&lt;p&gt;假设一个数组如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$array = array(
+    &#39;a&#39; =&amp;gt;array(
+        &#39;b&#39; =&amp;gt; array(
+            &#39;c&#39; =&amp;gt; array(
+                &#39;d&#39; =&amp;gt; array(
+                    &#39;e&#39; =&amp;gt; 3
+                )
+            )
+        )
+    ),
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;假定有个函数可以&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Config::set(&#39;a.b.c.d.e&#39;,6,$array)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如何将其中最内层的&lt;strong&gt;e&lt;/strong&gt;设置为6。可能，我们首先想到的就是递归，然后在设置。当然，这个方法是可行的。加入，我们不断的加层级，那么递归的带来的性能消耗可能就很明显了。&lt;/p&gt;
+
+&lt;p&gt;思来想去就用下面的方法解决&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Config
+{
+    static function set($path,$value,&amp;amp;$array)
+    {
+        //分解层级
+        $path_arr = explode(&amp;quot;.&amp;quot;,$path);
+        $count = count($path_arr);
+        if($count == 0) return false;
+        $str = &#39;&#39;;
+        //循环层级，构建数组形式
+        for($i=0;$i&amp;amp;lt;$count;$i++)
+        {   
+            if($i == 0)
+            {
+                $str .= &#39;$array[\&#39;&#39;.$path_arr[$i].&#39;\&#39;]&#39;;
+            }
+            else
+                $str .= &#39;[\&#39;&#39;.$path_arr[$i].&#39;\&#39;]&#39;;
+        }
+        //设定值
+        eval(&amp;quot;$str = $value;&amp;quot;); 
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此代码中最重要的就是&lt;strong&gt;$str&lt;/strong&gt;构造数组形式，最后通过eval设定值。整个过程没有用到递归，程序也很好理解。&lt;/p&gt;
+
+&lt;p&gt;我们发现，其实很多时候，稍微想想，还是能给出更好的解决方法的。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>简单的学生管理类</title>
+      <link>http://www.yuzhan.me/post/2014-03-18-%E7%AE%80%E5%8D%95%E7%9A%84%E5%AD%A6%E7%94%9F%E7%AE%A1%E7%90%86%E7%B1%BB/</link>
+      <pubDate>Tue, 18 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-03-18-%E7%AE%80%E5%8D%95%E7%9A%84%E5%AD%A6%E7%94%9F%E7%AE%A1%E7%90%86%E7%B1%BB/</guid>
+      <description>&lt;pre&gt;&lt;code&gt;class Student(object):
+    FMT = &#39;[ID:%(ID)s] Name:%(name)s,age:%(age)d&#39;
+
+    def __init__(self,name,age,ID):
+        self.name = name
+        self.age = age
+        self.ID = ID
+        self.scores = []
+
+#     使用c++风格iostream
+    def __lshift__(self,degree):
+        self.scores.append(degree)
+
+    def averange(self):
+        return averange(self.scores)
+
+    def __str__(self):
+        return self.FMT % self.__dict__
+
+def averange(scores):
+    if not scores:
+        return None
+    else:
+        return sum(scores) / len(scores)
+
+def consoleGet(prompt,convertor=str):
+    while 1:
+        try:
+            return convertor(raw_input(prompt))
+        except:
+            pass
+
+def main():
+    student = Student(
+                      name=consoleGet(&amp;quot;Please enter student&#39;s name: &amp;quot;),
+                      age=consoleGet(&amp;quot;Please enter student&#39;s age: &amp;quot;,int),
+                      ID=consoleGet(&amp;quot;Please enter student&#39;s ID:&amp;quot;)
+                      )
+
+    for i in range(4):
+        prompt = &amp;quot;Please enter student&#39;s grade %d score: &amp;quot; % i
+        student &amp;amp;lt;&amp;amp;lt; consoleGet(prompt, int)
+    print &amp;quot;%s, averange: %d&amp;quot; % (student, student.averange())
+
+if __name__ == &#39;__main__&#39;:
+    main()
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>无限级分类研究：（八）新的方法</title>
+      <link>http://www.yuzhan.me/post/2014-02-16-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AB%EF%BC%89%E6%96%B0%E7%9A%84%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-02-16-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E5%85%AB%EF%BC%89%E6%96%B0%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;p&gt;我们之前介绍第二种方法，用栏目的path来定义结构，最后达到一条语句输出的结果。如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/一条sql输出所有栏目1.png&#34; alt=&#34;一条sql输出所有栏目&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;通过这个结构，我们不难想象，这个结构的关键就在于path。但我们仔细看表的时候，发觉path和pid之间有些多余，有没有一种方法，更够简化呢，答案当然是有的。&lt;/p&gt;
+
+&lt;p&gt;上图，我们发现new_order是path和id的结合。于是可以思索，如果此结构本来就存在，我们如何做？&lt;/p&gt;
+
+&lt;p&gt;要解释这个问题，我们先给出表结构&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE TABLE `category` (
+  `struct` varchar(30) NOT NULL COMMENT &#39;栏目结构&#39;,
+  `name` varchar(30) NOT NULL COMMENT &#39;栏目名称&#39;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;整个表已经简化成只有两个字段了。我们思索了一下，如果一直用连接符&amp;#8221;-&amp;#8221;来连接，那么是不是显得很不好看。&lt;br /&gt;
+于是我们索性把它去掉，下面，我们看看表中的数据&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/02/新无限极分类.png&#34; alt=&#34;新无限极分类&#34; /&gt;&lt;br /&gt;
+看结构，我们知道，栏目是以&lt;strong&gt;01&lt;/strong&gt;开始，如果是他的子栏目，则变成&lt;strong&gt;0101&lt;/strong&gt;，而0101的兄弟栏目则是&lt;strong&gt;0102&lt;/strong&gt;，我们执行下一段sql&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SELECT * FROM category ORDER BY struct&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;得到下图，我们更能够清楚的看清结构&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/02/新结构层次图.png&#34; alt=&#34;新结构层次图&#34; /&gt;&lt;br /&gt;
+既然结构出来了，我们就应该想想该如何增删改。&lt;/p&gt;
+
+&lt;p&gt;之前的程序，我们添加的时候，没有去思考，栏目的id是多少，因为是自动递增的。我们只需要考虑它的的父级栏目就可以，而父级栏目也是很好确定的。&lt;/p&gt;
+
+&lt;p&gt;看这里，我们不仅要确定父级栏目，还要确定自己的编号。&lt;/p&gt;
+
+&lt;p&gt;经过我们观察，父级栏目的&lt;strong&gt;struct,&lt;/strong&gt;就是自己&lt;strong&gt;struct&lt;/strong&gt;去掉最后两位。比如，新闻的&lt;strong&gt;struct&lt;/strong&gt;为&lt;strong&gt;01&lt;/strong&gt;，他的子栏目体育新闻的&lt;strong&gt;struct&lt;/strong&gt;为&lt;strong&gt;0101&lt;/strong&gt;。同样，困扰我们的是，自己的编号怎么确定。&lt;/p&gt;
+
+&lt;p&gt;我们知道，struct必须为唯一，那么，那么子栏目，必须为01 &amp;#8211; 99，不能相同。&lt;/p&gt;
+
+&lt;p&gt;为了能让，栏目能够更好的利用，我们将下一个增加的子栏目定位，最后一个兄弟栏目的编号+1&lt;/p&gt;
+
+&lt;p&gt;这么说，如果我们要在世界下面加个子栏目，由于最后一个子栏目编号为&lt;strong&gt;0202,&lt;/strong&gt;也就是欧洲，于是我们新加的栏目编号为&lt;strong&gt;0203&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;于是，添加栏目所有的问题就在于怎样获得栏目编号，下面给出程序：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private function getLastStruct($pstruct=null)
+{
+
+    //没有父级栏目，也就是为顶级栏目
+    if(!$pstruct)
+        $sql = &amp;quot;select * from category where length(struct)=2 order by struct desc limit 1&amp;quot;;
+    else
+        $sql = &#39;select * from category where (length(struct) - length(&amp;quot;&#39;.$pstruct.&#39;&amp;quot;) = 2) AND (struct like &amp;quot;&#39;.$pstruct.&#39;%&amp;quot;) order by struct desc limit 1&#39;;
+
+    $result = $this-&amp;gt;db-&amp;gt;query($sql);
+    $row = $result-&amp;gt;fetch_assoc();
+    //没有父级栏目，没有任何结果，表示为初始栏目
+    if(!$row)
+        $struct = $pstruct.&amp;quot;01&amp;quot;;
+    else
+    {
+        $len = strlen($row[&#39;struct&#39;]);
+        $struct = sprintf(&amp;quot;%0&amp;quot;.$len.&amp;quot;d&amp;quot;,$row[&#39;struct&#39;] + 1);
+    }
+    return $struct;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下面给出添加函数，&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function add($pstruct,$name)
+{
+    //获取新的struct
+    $data[&#39;struct&#39;] = $this-&amp;gt;getLastStruct($pstruct);
+    $data[&#39;name&#39;] = $name;
+
+    $sql = &amp;quot;insert into category (struct,name) values(&#39;&amp;quot;.$data[&#39;struct&#39;].&amp;quot;&#39;,&#39;&amp;quot;.$data[&#39;name&#39;].&amp;quot;&#39;)&amp;quot;;
+    $this-&amp;gt;db-&amp;gt;query($sql);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;添加就写完了，明天继续给大家分享，删除和修改&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>python中函数参数的一些思考</title>
+      <link>http://www.yuzhan.me/post/2014-01-22-python%E4%B8%AD%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</link>
+      <pubDate>Wed, 22 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-22-python%E4%B8%AD%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</guid>
+      <description>&lt;p&gt;我们知道，对于变长的函数参数，php中可以用数组，js中可以使用对象来进行传参。&lt;br /&gt;
+而收集函数参数，php中使用的方法为&lt;strong&gt;func_get_args()&lt;/strong&gt;,在js中则使用&lt;strong&gt;arguments&lt;/strong&gt;属性来获取（此属性类似数组）&lt;/p&gt;
+
+&lt;p&gt;在python中，我们如何获取变长参数呢&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;第一：使用列表，字典&lt;/strong&gt;&lt;strong&gt;，元组&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;例如&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def demo(x):
+    for s in x:
+        print(s)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此处注意，元组具有不可变性，所以，在函数内不应该修改元组，否则会报错，如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def demo(x):
+    x[0] = 1
+demo((1,2,3,4))
+
+&amp;quot;&amp;quot;&amp;quot;
+上述会输出如下错误信息
+Traceback (most recent call last):
+....
+TypeError: &#39;tuple&#39; object does not support item assignment
+&amp;quot;&amp;quot;&amp;quot;
+
+
+**第二：使用可变参数  
+**
+
+``
+def demo(*args,**kargs):
+    print(args)
+    print(kargs)
+demo()
+&amp;quot;&amp;quot;&amp;quot;
+()
+{}
+&amp;quot;&amp;quot;&amp;quot;
+
+demo(1,2)
+&amp;quot;&amp;quot;&amp;quot;
+(1,2)
+{}
+&amp;quot;&amp;quot;&amp;quot;
+
+demo(c=&#39;a&#39;,b=&#39;d&#39;)
+&amp;quot;&amp;quot;&amp;quot;
+()
+{&#39;c&#39;: &#39;a&#39;, &#39;b&#39;: &#39;d&#39;}
+&amp;quot;&amp;quot;&amp;quot;
+
+demo(1,2,c=&#39;a&#39;,b=&#39;d&#39;)
+&amp;quot;&amp;quot;&amp;quot;
+(1, 2)
+{&#39;c&#39;: &#39;a&#39;, &#39;b&#39;: &#39;d&#39;}
+&amp;quot;&amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中，*&lt;strong&gt;args&lt;/strong&gt;将收集所有位置相关的参数，并放到一个元组中，最后将这个元组赋值给&lt;strong&gt;args&lt;/strong&gt;&lt;br /&gt;
+而**&lt;strong&gt;kargs&lt;/strong&gt;指针对关键字参数（指a=3这一类型），这些关键字参数会放到一个相应的字典中，然后同样的赋值给&lt;strong&gt;kargs&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;与此相对，python中还有解包参数。参考以下程序&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def demo(a,b,c):
+    print(a,b,c)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;正常调用的情况下，我们得传三个参数，例如&lt;strong&gt;demo(1,2,3)&lt;/strong&gt;&lt;br /&gt;
+但有了解包参数，我们可以只用传一个元组就可以实现&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def demo(a,b,c):
+    print(a,b,c)
+
+arg = (1,2,3)
+demo(arg)
+&amp;quot;&amp;quot;&amp;quot;
+Traceback (most recent call last):
+...
+TypeError: demo() takes exactly 3 arguments (1 given)
+&amp;quot;&amp;quot;&amp;quot;
+
+demo(*arg)
+&amp;quot;&amp;quot;&amp;quot;
+(1, 2, 3)
+&amp;quot;&amp;quot;&amp;quot;
+&amp;lt;/pre&amp;gt;
+
+***arg**可以解包元组，而****arg**则可以解包字典  
+参考以下程序
+
+&amp;lt;pre class=&amp;quot;brush: python; title: ; notranslate&amp;quot; title=&amp;quot;&amp;quot;&amp;gt;def demo(a,b,c):
+    print(a,b,c)
+
+arg = {&#39;a&#39;:4,&#39;b&#39;:5,&#39;c&#39;:6}
+demo(**arg)
+#(4, 5, 6)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意收集参数和参数解包形式上很相似，要注意区别。&lt;br /&gt;
+收集函数是，在形参中，利用&lt;red&gt;*&lt;/red&gt;,&lt;red&gt;&lt;strong&gt;&lt;/red&gt;来实现&lt;br /&gt;
+参数解包，则是在实参中，利用&lt;red&gt;*&lt;/red&gt;,&lt;red&gt;&lt;/strong&gt;&lt;/red&gt;来实现&lt;/p&gt;
+
+&lt;p&gt;有了以上基础，我们来模拟&lt;strong&gt;map()&lt;/strong&gt;的实现&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def mymap(func,*seqs):
+    res = []
+    for args in zip(*seqs):
+        res.append(func(*args))
+    return res
+
+
+
+print(mymap(abs,[-2,-1,0,1,2]))
+&amp;quot;&amp;quot;&amp;quot;
+收集参数构成seqs成员元祖([-2,-1,0,1,2],)
+通过*seqs解包传入zip,得到元祖
+(-2,),(-1,),(0,),(1,),(2,)
+循环遍历之后，通过解包参数为
+abs(-2),abs(-1),abs(0),abs(1),abs(2)
+&amp;quot;&amp;quot;&amp;quot;
+
+print(mymap(pow,[1,2,3],[2,3,4,5]))
+&amp;quot;&amp;quot;&amp;quot;
+zip()通过*seqs解包参数得到三个元祖
+(1,2),(2,3),(3,4)
+遍历循环之后，元祖解包成为pow的两个参数于是
+pow(1,2),pow(2,3),pow(3,4)
+&amp;quot;&amp;quot;&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>lambda表达式的一些特例</title>
+      <link>http://www.yuzhan.me/post/2014-01-20-lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E4%BE%8B/</link>
+      <pubDate>Mon, 20 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-20-lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E4%BE%8B/</guid>
+      <description>&lt;p&gt;在js中，函数无限极嵌套。python也可以如此。 最近，在学习python中发现一个很有意思的东西 先看一下的代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def func1():
+    res = []
+    for i in range(5):
+        res.append(lambda x: i ** x)
+    return res
+
+s1 = func1()
+print(s1[0](4))
+print(s1[2](4))
+#输出 256,256
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;为什么都会输出256呢，&lt;br /&gt;
+别急，我们先看下面的函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def func2():
+    res = []
+    for i in range(5):
+        res.append(lambda x,i=i: i ** x)
+    return res
+s2 = func2()
+print(s2[0](4))
+print(s2[2](4))
+#输出0,16
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;观察两个函数，我们发觉只有lambda表达式中，函数的参数不一样。&lt;br /&gt;
+通过查资料，我们了解到。&lt;br /&gt;
+&lt;strong&gt;嵌套函数中的变量只有在调用的时候，才会进行查找&lt;/strong&gt;&lt;br /&gt;
+于是，我们观察以上的程序,发现循环之后，i变量会保存为最终值（就是4），直到调用&lt;strong&gt;func1()&lt;/strong&gt;。&lt;br /&gt;
+而第二个函数，&lt;strong&gt;func2()&lt;/strong&gt;中有默认值i，而默认值则是在函数创建时，就会进行查找，所以，会随表达式一起。&lt;/p&gt;
+
+&lt;p&gt;下面给出js代码，供大家参考&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;function func1()
+{
+    var arr = []
+    for (var i=0; i &amp;amp;lt; 5; i++){
+        arr.push(function(x){alert(i*x)})
+    }
+    return arr
+}
+var x = func1()
+x[0](5)
+x[1](5)
+
+
+function func2()
+{
+    var arr = []
+    for(var i = 0; i &amp;amp;lt; 5; i++){
+        cache(i)
+    }
+
+    //由于js中没有python默认值这种模式，于是改用函数来改变存入数组的函数
+    function cache(i)
+    {
+        arr.push(function(x){
+            alert(i * x);
+        })
+    }
+    return arr
+}
+var x2 = func2()
+x2[0](5)
+x2[1](5)
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>无限级分类研究：（七）栏目的排序</title>
+      <link>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Fri, 17 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;p&gt;昨天我们的程序完成之后，发觉，我们栏目完全无法按照list_order来排序。实际情况中，除非对排序要求不是很高的栏目，比如地区，职业行业等等信息，其他的如，商品栏目之类，都是需要排序。&lt;/p&gt;
+
+&lt;p&gt;因此，我们不能不能不去思考这个问题。当我们思考起这个问题时，有发觉难以下手。&lt;/p&gt;
+
+&lt;p&gt;那我们应该整理一下思路，&lt;/p&gt;
+
+&lt;p&gt;我们排序的规则如下: 父栏目 &amp;#8212;-&amp;gt; 子栏目&lt;/p&gt;
+
+&lt;p&gt;也就是说，父栏目排完，再把子栏目插入父栏目之中。我们似乎又得做循环插入的事情。如果用到递归，那么，我们这个程序似乎就不是那么完美。那有没有别的方法呢？&lt;/p&gt;
+
+&lt;p&gt;答案是有的。我们的思路是先组合一组栏目，再组合另一组，最后对每个组合进行排序，如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/新排序方式思维图.jpg&#34; alt=&#34;新排序方式思维图&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+
+&lt;p&gt;下面就加入我们的程序，&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+ * 排序
+ */
+function listorder()
+{
+    $array = array();
+    foreach($this-&amp;gt;data as $key =&amp;gt; $val)
+    {
+        // 查找该栏目的层级
+        $array = explode(&amp;quot;-&amp;quot;,$val[&#39;new_order&#39;]);
+        // 去除第一个栏目，因为最高级均为0，没有比较的意义
+        array_shift($array);
+        $order_arr = array();
+        foreach($array as $k =&amp;gt; $v)
+        {
+            //组装新排序，sprintf格式化数据
+            $order_arr[] = sprintf(&amp;quot;%03d&amp;quot;,$this-&amp;gt;data[$v][&#39;list_order&#39;]);
+        }
+        //插入原有数据，方便之后的排序
+        $this-&amp;gt;data[$key][&#39;order&#39;] = implode(&amp;quot;-&amp;quot;,$order_arr);
+    }
+    
+    //根据新的order对数组排序，如果大家的php版本低于5.3,请不要使用匿名函数
+    uasort($this-&amp;gt;data,function($a,$b){
+        if($a[&#39;order&#39;] == $b[&#39;order&#39;]) return 0;
+        return $a[&#39;order&#39;] &amp;gt; $b[&#39;order&#39;] ? 1 : -1;
+    });
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上程序就是排序。&lt;br /&gt;
+可以看出，我们这类方法，适合于输出。但是，对于排序以及修改和删除，比较麻烦。&lt;br /&gt;
+这个方法在此告一段落。&lt;/p&gt;
+
+&lt;p&gt;当然，我们的无限级分类还没结束，接下来，我们将有更精彩的讲解，请大家多多关注。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
