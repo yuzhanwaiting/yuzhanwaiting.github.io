@@ -26,7 +26,7 @@
 
 &lt;h2 id=&#34;操作说明&#34;&gt;操作说明：&lt;/h2&gt;
 
-&lt;h3 id=&#34;1-环境准备&#34;&gt;1 环境准备&lt;/h3&gt;
+&lt;h3 id=&#34;环境准备&#34;&gt;环境准备&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;系统： &lt;code&gt;Linux(ubuntu)&lt;/code&gt;,&lt;code&gt;Mac OS&lt;/code&gt;,&lt;code&gt;Windows&lt;/code&gt;(不推荐使用)&lt;/li&gt;
@@ -34,7 +34,7 @@
 &lt;li&gt;平台： &lt;code&gt;github&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;2-项目创建&#34;&gt;2 项目创建&lt;/h3&gt;
+&lt;h3 id=&#34;项目创建&#34;&gt;项目创建&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;在&lt;code&gt;github&lt;/code&gt;上创建新仓库，命名为: &lt;code&gt;username.github.io&lt;/code&gt;
@@ -61,7 +61,7 @@
 &lt;li&gt;访问页面 &lt;code&gt;http://username.github.io&lt;/code&gt; 则显示刚写入文件的信息&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;3-本地环境创建-以ubuntu为参考&#34;&gt;3 本地环境创建（以ubuntu为参考）&lt;/h3&gt;
+&lt;h3 id=&#34;本地环境创建-以ubuntu为参考&#34;&gt;本地环境创建（以ubuntu为参考）&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;安装&lt;code&gt;ruby-install&lt;/code&gt;，此用于安装ruby环境&lt;/p&gt;
@@ -109,7 +109,7 @@ https://ruby.taobao.org
 
 &lt;p&gt;至此，环境搭建完成&lt;/p&gt;
 
-&lt;h3 id=&#34;4-jekyll简单介绍&#34;&gt;4. jekyll简单介绍&lt;/h3&gt;
+&lt;h3 id=&#34;jekyll简单介绍&#34;&gt;jekyll简单介绍&lt;/h3&gt;
 
 &lt;h4 id=&#34;目录结构&#34;&gt;目录结构&lt;/h4&gt;
 
@@ -135,17 +135,61 @@ https://ruby.taobao.org
 
 &lt;p&gt;结构说明：&lt;/p&gt;
 
-&lt;p&gt;| 文件目录  |  描述  |
-| &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash; | &amp;mdash;&amp;mdash;&amp;ndash; |
-| _config.yml  | 保存配置数据。 |
-| _drafts      | drafts 未发布的文章。 |
-| _includes   | 你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。 |
-| _layouts   | layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中 |
-| _posts   | 这里放的就是你的文章了 |
-| _data   | 存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member |
-| _site   | 一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中。 |
-| index.html   | 全局首页 |
-| 其他文件   | 其他一些未被提及的目录和文件如  css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中 |&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;文件目录&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;_config.yml&lt;/td&gt;
+&lt;td&gt;保存配置数据&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_drafts&lt;/td&gt;
+&lt;td&gt;drafts 未发布的文章&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_includes&lt;/td&gt;
+&lt;td&gt;你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_layouts&lt;/td&gt;
+&lt;td&gt;layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_posts&lt;/td&gt;
+&lt;td&gt;这里放的就是你的文章了&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_data&lt;/td&gt;
+&lt;td&gt;存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_site&lt;/td&gt;
+&lt;td&gt;一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;index.html&lt;/td&gt;
+&lt;td&gt;全局首页&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;其他文件&lt;/td&gt;
+&lt;td&gt;其他一些未被提及的目录和文件如,css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;h4 id=&#34;配置说明&#34;&gt;配置说明&lt;/h4&gt;
 
@@ -175,17 +219,61 @@ version:          1.0.0
 
 &lt;p&gt;配置说明：&lt;/p&gt;
 
-&lt;p&gt;| 配置项 | 说明 |
-|:&amp;mdash;&amp;mdash;&amp;mdash;-|:&amp;mdash;&amp;mdash;&amp;ndash;:|
-| highlighter  | 高亮组件，一般选择pygments |
-| encoding     | 博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo; |
-| title        | 博客标题                 |
-| tagline      | 博客标语                 |
-| description  | 博客描述 |
-| url          | 博客地址 |
-| paginate     | 博客每页页数 |
-| paginate_path | 博客分页样式 |
-| gems     | 依赖哪些库 |&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;配置项&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;highlighter&lt;/td&gt;
+&lt;td&gt;高亮组件，一般选择pygments&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;encoding&lt;/td&gt;
+&lt;td&gt;博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;title&lt;/td&gt;
+&lt;td&gt;博客标题&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;tagline&lt;/td&gt;
+&lt;td&gt;博客标语&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;description&lt;/td&gt;
+&lt;td&gt;博客描述&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;url&lt;/td&gt;
+&lt;td&gt;博客地址&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;paginate&lt;/td&gt;
+&lt;td&gt;博客每页页数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;paginate_path&lt;/td&gt;
+&lt;td&gt;博客分页样式&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;gems&lt;/td&gt;
+&lt;td&gt;博客分页样式&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;h4 id=&#34;编写博客&#34;&gt;编写博客&lt;/h4&gt;
 
@@ -204,7 +292,7 @@ version:          1.0.0
 &lt;li&gt;&lt;p&gt;写好文档，直接推送至&lt;code&gt;github&lt;/code&gt;，等几分钟后就可以正常访问&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;5-配置域名&#34;&gt;5. 配置域名&lt;/h3&gt;
+&lt;h3 id=&#34;配置域名&#34;&gt;配置域名&lt;/h3&gt;
 
 &lt;p&gt;如果需要自定义域名,可以直接将域名作&lt;code&gt;CNAME&lt;/code&gt;解析为 &lt;code&gt;username.github.io.&lt;/code&gt;,注意后面有个&lt;code&gt;.&lt;/code&gt;,几分钟后就可以用新的域名访问&lt;code&gt;github pages&lt;/code&gt;博客了&lt;/p&gt;
 </description>

